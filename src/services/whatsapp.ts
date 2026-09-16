@@ -2352,6 +2352,7 @@ Pesan pribadi kembali diizinkan.` }, { quoted: msg });
             }
         }
     } else if (body === ".math" || body === "math") {
+      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       const num1 = Math.floor(Math.random() * 100);
       const num2 = Math.floor(Math.random() * 100);
       const ops = ['+', '-', '*'];
@@ -2367,6 +2368,7 @@ Pesan pribadi kembali diizinkan.` }, { quoted: msg });
       }
       this.broadcastState(`Responded to math command`);
     } else if (body === ".susunkata" || body === "susunkata") {
+      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       try {
           const res = await axios.get('https://raw.githubusercontent.com/BochilTeam/database/master/games/susunkata.json');
           if (res.data && res.data.length > 0) {
@@ -2381,6 +2383,7 @@ Pesan pribadi kembali diizinkan.` }, { quoted: msg });
       }
       this.broadcastState(`Responded to susunkata command`);
     } else if (body === ".tebakgambar" || body === "tebakgambar") {
+      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       try {
           const res = await axios.get('https://raw.githubusercontent.com/BochilTeam/database/master/games/tebakgambar.json');
           if (res.data && res.data.length > 0) {
@@ -2395,6 +2398,7 @@ Pesan pribadi kembali diizinkan.` }, { quoted: msg });
       }
       this.broadcastState(`Responded to tebakgambar command`);
     } else if (body === ".tebakkata" || body === "tebakkata") {
+      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       try {
           const res = await axios.get('https://raw.githubusercontent.com/BochilTeam/database/master/games/tebakkata.json');
           if (res.data && res.data.length > 0) {
@@ -2409,6 +2413,7 @@ Pesan pribadi kembali diizinkan.` }, { quoted: msg });
       }
       this.broadcastState(`Responded to tebakkata command`);
     } else if (body === ".tebakbendera" || body === "tebakbendera") {
+      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       try {
           const res = await axios.get('https://raw.githubusercontent.com/BochilTeam/database/master/games/tebakbendera.json');
           if (res.data && res.data.length > 0) {
@@ -2424,6 +2429,7 @@ Pesan pribadi kembali diizinkan.` }, { quoted: msg });
       }
       this.broadcastState(`Responded to tebakbendera command`);
     } else if (body === ".asahotak" || body === "asahotak") {
+      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       try {
           const res = await axios.get('https://raw.githubusercontent.com/BochilTeam/database/master/games/asahotak.json');
           if (res.data && res.data.length > 0) {
@@ -2438,6 +2444,7 @@ Pesan pribadi kembali diizinkan.` }, { quoted: msg });
       }
       this.broadcastState(`Responded to asahotak command`);
     } else if (body === ".tebakbuah" || body === "tebakbuah") {
+      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       const buahList = [
           { soal: "🍎", jawaban: "apel" },
           { soal: "🍌", jawaban: "pisang" },
@@ -2465,6 +2472,7 @@ Pesan pribadi kembali diizinkan.` }, { quoted: msg });
       }
       this.broadcastState(`Responded to tebakbuah command`);
     } else if (body === ".tebaklirik" || body === "tebaklirik") {
+      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       try {
           const res = await axios.get('https://raw.githubusercontent.com/BochilTeam/database/master/games/tebaklirik.json');
           if (res.data && res.data.length > 0) {
@@ -2479,6 +2487,7 @@ Pesan pribadi kembali diizinkan.` }, { quoted: msg });
       }
       this.broadcastState(`Responded to tebaklirik command`);
     } else if (body === ".tekateki" || body === "tekateki") {
+      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       try {
           const res = await axios.get('https://raw.githubusercontent.com/BochilTeam/database/master/games/tekateki.json');
           if (res.data && res.data.length > 0) {
@@ -2493,6 +2502,7 @@ Pesan pribadi kembali diizinkan.` }, { quoted: msg });
       }
       this.broadcastState(`Responded to tekateki command`);
     } else if (body === ".kuis" || body === "kuis") {
+      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       try {
           const res = await axios.get('https://raw.githubusercontent.com/BochilTeam/database/master/games/siapakahaku.json');
           if (res.data && res.data.length > 0) {
@@ -2507,6 +2517,7 @@ Pesan pribadi kembali diizinkan.` }, { quoted: msg });
       }
       this.broadcastState(`Responded to kuis command`);
     } else if (body === ".tebakkota" || body === "tebakkota") {
+      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       try {
           const res = await axios.get('https://raw.githubusercontent.com/BochilTeam/database/master/games/tebakkabupaten.json');
           if (res.data && res.data.length > 0) {
@@ -2523,6 +2534,7 @@ Pesan pribadi kembali diizinkan.` }, { quoted: msg });
       }
       this.broadcastState(`Responded to tebakkota command`);
     } else if (body === ".family100" || body === "family100") {
+      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       try {
           const res = await axios.get('https://raw.githubusercontent.com/BochilTeam/database/master/games/family100.json');
           if (res.data && res.data.length > 0) {
@@ -2537,6 +2549,7 @@ Pesan pribadi kembali diizinkan.` }, { quoted: msg });
       }
       this.broadcastState(`Responded to family100 command`);
     } else if (body === ".tebakusia" || body === "tebakusia") {
+      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       const tokoh = [
         { nama: "Joko Widodo (2024)", umur: 63 }, { nama: "Prabowo Subianto (2024)", umur: 73 }, 
         { nama: "Cristiano Ronaldo (2024)", umur: 39 }, { nama: "Lionel Messi (2024)", umur: 37 },
@@ -2551,6 +2564,7 @@ Pesan pribadi kembali diizinkan.` }, { quoted: msg });
       }
       this.broadcastState(`Responded to tebakusia command`);
     } else if (body === ".tebakkimia" || body === "tebakkimia") {
+      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       try {
           const res = await axios.get('https://raw.githubusercontent.com/BochilTeam/database/master/games/tebakkimia.json');
           if (res.data && res.data.length > 0) {
@@ -2565,6 +2579,7 @@ Pesan pribadi kembali diizinkan.` }, { quoted: msg });
       }
       this.broadcastState(`Responded to tebakkimia command`);
     } else if (body === ".tebakangka" || body === "tebakangka") {
+      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       const target = Math.floor(Math.random() * 100) + 1;
       const sentMsg = await this.sock.sendMessage(jid, { text: `🔢 *Game Tebak Angka*\n\nTebak angka dari 1 sampai 100!\n\n_Silakan balas (reply) pesan ini dengan angka tebakanmu!_` }, { quoted: msg });
       if (sentMsg?.key?.id) {
@@ -2572,11 +2587,13 @@ Pesan pribadi kembali diizinkan.` }, { quoted: msg });
       }
       this.broadcastState(`Responded to tebakangka command`);
     } else if (body === ".werewolf" || body === "werewolf") {
-      const senderJid = msg.key.participant || msg.participant || msg.key.remoteJid;
+      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
+      
       this.activeGames.set("werewolf_" + jid, { type: "werewolf", state: "joining", players: [senderJid], answer: "" });
       await this.sock.sendMessage(jid, { text: `🐺 *Game Werewolf*\n\nGame dibuat! Ketik .joinww untuk bergabung!\nPemain: 1` }, { quoted: msg });
       this.broadcastState(`Responded to werewolf command`);
     } else if (body === ".tebakuang" || body === "tebakuang") {
+      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       const data = [
         { soal: "Mata uang negara Jepang?", jawaban: "Yen" },
         { soal: "Mata uang negara Amerika Serikat?", jawaban: "Dollar" },
@@ -2591,6 +2608,7 @@ Pesan pribadi kembali diizinkan.` }, { quoted: msg });
       }
       this.broadcastState(`Responded to tebakuang command`);
     } else if (body === ".tebaksurah" || body === "tebaksurah") {
+      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       const data = [
         { soal: "Surah pembuka dalam Al-Quran?", jawaban: "Al-Fatihah" },
         { soal: "Surah yang menceritakan tentang sapi betina?", jawaban: "Al-Baqarah" },
@@ -2605,6 +2623,7 @@ Pesan pribadi kembali diizinkan.` }, { quoted: msg });
       }
       this.broadcastState(`Responded to tebaksurah command`);
     } else if (body === ".tebakhewan" || body === "tebakhewan") {
+      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       const data = [
         { soal: "Hewan mamalia berleher panjang?", jawaban: "Jerapah" },
         { soal: "Hewan yang memiliki belalai?", jawaban: "Gajah" },
@@ -2619,6 +2638,7 @@ Pesan pribadi kembali diizinkan.` }, { quoted: msg });
       }
       this.broadcastState(`Responded to tebakhewan command`);
     } else if (body === ".tebakbaju" || body === "tebakbaju") {
+      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       const data = [
         { soal: "Pakaian atasan berkerah yang biasa dipakai untuk acara formal?", jawaban: "Kemeja" },
         { soal: "Pakaian tradisional wanita Indonesia?", jawaban: "Kebaya" },
@@ -2633,6 +2653,7 @@ Pesan pribadi kembali diizinkan.` }, { quoted: msg });
       }
       this.broadcastState(`Responded to tebakbaju command`);
     } else if (body === ".tebakcelana" || body === "tebakcelana") {
+      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       const data = [
         { soal: "Celana yang berbahan denim?", jawaban: "Jeans" },
         { soal: "Celana longgar untuk berolahraga?", jawaban: "Training" },
@@ -2648,7 +2669,7 @@ Pesan pribadi kembali diizinkan.` }, { quoted: msg });
       this.broadcastState(`Responded to tebakcelana command`);
     } else if (body === ".joinww" || body === "joinww") {
       const wwGame = this.activeGames.get("werewolf_" + jid);
-      const senderJid = msg.key.participant || msg.participant || msg.key.remoteJid;
+      
       if (wwGame && wwGame.type === "werewolf" && wwGame.state === "joining") {
           const players = wwGame.players as string[];
           if (!players.includes(senderJid!)) {
@@ -5750,12 +5771,14 @@ Link referensi: ${randomItem.link}` }, { quoted: msg });
         await this.sock.sendMessage(jid, { text: "❌ Gunakan perintah ini di dalam grup atau berikan link grup.\nContoh: .cekidgc https://chat.whatsapp.com/xxxx" }, { quoted: msg });
       }
     } else if (body === ".tebakmakanan" || body === "tebakmakanan") {
+      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       const clue = ["Bentuknya bulat, ada yang manis ada yang gurih, tengahnya bolong.", "Donat"];
       const sentMsg = await this.sock.sendMessage(jid, { text: `🍔 *Tebak Makanan*\n\nClue: ${clue[0]}\n_Silakan balas (reply) pesan ini dengan jawabanmu!_` }, { quoted: msg });
       if (sentMsg?.key?.id) {
           this.activeGames.set(sentMsg.key.id, { answer: clue[1], type: "tebakmakanan" });
       }
     } else if (body === ".tebakjkt48" || body === "tebakjkt48") {
+      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       const members = ["Zee", "Freya", "Adel", "Gracia", "Shani", "Christy", "Marsha"];
       const randomMember = members[Math.floor(Math.random() * members.length)];
       const scrambled = randomMember.split('').sort(() => 0.5 - Math.random()).join('');
@@ -5764,6 +5787,7 @@ Link referensi: ${randomItem.link}` }, { quoted: msg });
           this.activeGames.set(sentMsg.key.id, { answer: randomMember, type: "tebakjkt48" });
       }
     } else if (body === ".truthordare" || body === "truthordare") {
+      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       const isTruth = Math.random() < 0.5;
       const truths = ["Kapan terakhir kali kamu menangis?", "Apa rahasia terbesar yang tidak pernah kamu beri tahu pada siapapun?", "Siapa orang yang paling kamu benci di grup ini?", "Apa kebohongan terbesar yang pernah kamu katakan pada orang tuamu?", "Pernahkah kamu menyukai pacar temanmu sendiri?"];
       const dares = ["Kirim pesan suara (voice note) dengan suara hantu ke grup ini", "Jadikan foto profilmu foto konyol selama 24 jam", "Kirim pesan 'aku sayang kamu' ke mantanmu sekarang juga (sertakan screenshot)", "Spam chat grup ini dengan emoji 🐵 sebanyak 20 kali", "Nyanyikan lagu potong bebek angsa dengan nada marah dan kirim ke grup"];
@@ -5771,6 +5795,7 @@ Link referensi: ${randomItem.link}` }, { quoted: msg });
       const type = isTruth ? "Truth 🗣️" : "Dare 🎯";
       await this.sock.sendMessage(jid, { text: `🎭 *Truth or Dare*\n\nTerpilih: *${type}*\nTantangan/Pertanyaan: ${selected}` }, { quoted: msg });
     } else if (body.startsWith(".ulartangga") || body.startsWith("ulartangga")) {
+      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       const args = body.split(" ").slice(1);
       const cmdArg = args[0] ? args[0].toLowerCase() : "";
       const gameKey = "ulartangga_" + jid;
@@ -5943,6 +5968,7 @@ Link referensi: ${randomItem.link}` }, { quoted: msg });
            await this.sock.sendMessage(jid, { text: `❌ Gagal mencari wallpaper.` }, { quoted: msg });
        }
     } else if (body.startsWith(".togel ") || body.startsWith("togel ")) {
+      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       const guess = body.split(" ")[1];
       if (!/^\d{4}$/.test(guess)) {
         await this.sock.sendMessage(jid, { text: "❌ Format salah! Kirim .togel [4 digit angka]\nContoh: .togel 1234" }, { quoted: msg });
@@ -5955,7 +5981,8 @@ Link referensi: ${randomItem.link}` }, { quoted: msg });
         }
       }
     } else if (body === ".stoptogel" || body === "stoptogel") {
-       await this.sock.sendMessage(jid, { text: "🛑 *Sesi togel dihentikan!*" }, { quoted: msg });
+       await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
+      await this.sock.sendMessage(jid, { text: "🛑 *Sesi togel dihentikan!*" }, { quoted: msg });
     } else if (body.startsWith(".cekpariban") || body.startsWith("cekpariban") || body.startsWith(".cektartulang") || body.startsWith("cektartulang") || body.startsWith(".cektarito") || body.startsWith("cektarito") || body.startsWith(".cekpadan") || body.startsWith("cekpadan")) {
        let cmd = body.split(" ")[0].replace(".", "");
        const argsStr = messageContent.slice(messageContent.toLowerCase().indexOf(cmd) + cmd.length).trim();
