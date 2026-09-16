@@ -1222,6 +1222,11 @@ private loadKaryawanData() {
     ];
     const isProtectedFeature = requireRegistrationCommands.includes(requestedCmd.toLowerCase()) || requireRegistrationCommands.includes("." + possibleCommandName);
 
+    const isOwnerCommand = ownerCommands.includes(requestedCmd.toLowerCase()) || ownerCommands.includes("." + possibleCommandName);
+    const isGroupCommand = groupCommands.includes(requestedCmd.toLowerCase()) || groupCommands.includes("." + possibleCommandName);
+    const isPremiumCommand = premiumCommands.includes(requestedCmd.toLowerCase()) || premiumCommands.includes("." + possibleCommandName);
+    const isAnyCommand = isMenuCmd || isSpecificMenu || isProtectedFeature || isOwnerCommand || isGroupCommand || isPremiumCommand;
+
     if (isMenuCmd || isSpecificMenu || isProtectedFeature) {
       if (!this.registeredUsers.has(senderJid)) {
           const registerText = `Silakan daftar terlebih dahulu untuk menggunakan bot ini.\n\nKetik: *.daftar [nama].[umur]*\nContoh: .daftar Budi.18\n\nLink: ${this.menuLink || "jadibotbatakvip.biz.id"}`;
@@ -1235,8 +1240,11 @@ private loadKaryawanData() {
       }
     }
 
+    if (isAnyCommand) {
+        await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
+    }
+
     if (isMenuCmd) {
-      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       const botName = this.customBotName || this.sock.user?.name || "Wabot Pro";
       const totalFitur = ownerCommands.length + groupCommands.length + funCommands.length + margaCommands.length + videoCommands.length + stickerCommands.length + downloadCommands.length + kristenCommands.length + islamCommands.length + cecanCommands.length + primbonCommands.length + animeCommands.length + sertifikatCommands.length + rpgCommands.length + storeCommands.length + beritaCommands.length + sulapCommands.length + hentaiCommands.length + hantuCommands.length + posterCommands.length + coganCommands.length + toolsCommands.length + deviceCommands.length + tiketCommands.length + karyawanCommands.length + hewanCommands.length + bokepCommands.length + aiCommands.length + cdramaCommands.length + gameCommands.length + fakecallCommands.length + iqcCommands.length;
       
@@ -1317,41 +1325,33 @@ Ketik menu yang kamu inginkan.`;
       }
     
     } else if (body === "fakecallmenu" || body === ".fakecallmenu" || body === "fakecall menu" || body === ".fakecall menu") {
-      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       const fakecallText = `📱 *Fake Call Menu*\n\n│ .fakecallandroid teks | durasi\n│ .fakecalliphone teks | durasi\n│ .fakevidcalliphone teks | durasi\n\nContoh:\n.fakecallandroid Sayang | 05:20\n\nCatatan: Reply gambar untuk dijadikan foto profil.`;
       await this.sock.sendMessage(jid, { text: fakecallText, contextInfo: this.getMenuContextInfo() }, { quoted: this.getFakeMenuQuote(senderJid, msg.pushName || "User") });
     } else if (body === "iqcmenu" || body === ".iqcmenu" || body === "iqc menu" || body === ".iqc menu") {
-      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       const iqcText = `💬 *IQC Menu*\n\n│ .iqc teks\n│ .iqcpink teks\n│ .iqcmerah teks\n│ .iqcbiru teks\n│ .iqckuning teks\n\nContoh:\n.iqcpink Halo semuanya`;
       await this.sock.sendMessage(jid, { text: iqcText, contextInfo: this.getMenuContextInfo() }, { quoted: this.getFakeMenuQuote(senderJid, msg.pushName || "User") });
       this.broadcastState(`Responded to iqcmenu command`);
 } else if (body === "storemenu" || body === ".storemenu" || body === "store menu" || body === ".store menu") {
-      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       const storeText = `🛒 *Store Menu*\n\n│ .list\n│ .addlist\n│ .dellist\n│ .update\n│ .jeda\n│ .tambah\n│ .kurang\n│ .kali\n│ .delsetdone\n│ .changedone\n│ .setdone\n│ .delproses\n│ .changeproses\n│ .setproses\n│ .proses\n│ .done`;
       await this.sock.sendMessage(jid, { text: storeText, contextInfo: this.getMenuContextInfo() }, { quoted: this.getFakeMenuQuote(senderJid, msg.pushName || "User") });
       this.broadcastState(`Responded to storemenu command`);
     } else if (body === "beritamenu" || body === ".beritamenu" || body === "berita menu" || body === ".berita menu") {
-      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       const beritaText = `📰 *Berita Menu*\n\n│ .beritabola\n│ .fajar\n│ .cnn\n│ .layarkaca\n│ .cnbctribun\n│ .indozone\n│ .kompas\n│ .detiknews\n│ .dailynews\n│ .inews\n│ .okezone\n│ .sindo\n│ .tempo\n│ .antara\n│ .kontan\n│ .merdeka\n│ .jalantikus\n│ .beritasatu\n│ .liputan6\n│ .batampos\n│ .infoloker`;
       await this.sock.sendMessage(jid, { text: beritaText, contextInfo: this.getMenuContextInfo() }, { quoted: this.getFakeMenuQuote(senderJid, msg.pushName || "User") });
       this.broadcastState(`Responded to beritamenu command`);
     } else if (body === "sulapmenu" || body === ".sulapmenu" || body === "sulap menu" || body === ".sulap menu") {
-      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       const sulapText = `🎩 *Sulap Menu*\n\n│ .kartusulap\n│ .tongkatsulap\n│ .topisulap\n│ .koinsulap\n│ .thumbtip\n│ .cangkirdanbola\n│ .linkingrings\n│ .spongeballs\n│ .silkscarf\n│ .appearingcane\n│ .vanishingcane\n│ .changebag\n│ .dovepan\n│ .floatingtable\n│ .levitationdevice\n│ .kotakpedang\n│ .guillotinesulap\n│ .zigzagbox\n│ .kotaktembus\n│ .firewallet`;
       await this.sock.sendMessage(jid, { text: sulapText, contextInfo: this.getMenuContextInfo() }, { quoted: this.getFakeMenuQuote(senderJid, msg.pushName || "User") });
       this.broadcastState(`Responded to sulapmenu command`);
     } else if (body === "tiketmenu" || body === ".tiketmenu" || body === "tiket menu" || body === ".tiket menu") {
-      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       const tiketText = `🎟️ *Tiket Menu*\n\n│ .ticket\n│ .konser\n│ .event\n│ .jadwal\n│ .harga\n│ .kategori\n│ .seatmap\n│ .stoktiket\n│ .bookingtiket\n│ .riwayat`;
       await this.sock.sendMessage(jid, { text: tiketText, contextInfo: this.getMenuContextInfo() }, { quoted: this.getFakeMenuQuote(senderJid, msg.pushName || "User") });
       this.broadcastState(`Responded to tiketmenu command`);
     } else if (body === "karyawanmenu" || body === ".karyawanmenu" || body === "karyawan menu" || body === ".karyawan menu") {
-      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       const karyawanText = `🧑‍💼 *Karyawan Menu*\n\n│ .addproduk\n│ .delproduk\n│ .listproduk\n│ .cekproduk\n│ .addstok\n│ .cekstok\n│ .updatestok\n│ .restock\n│ .penjualan\n│ .riwayatjual\n│ .laporan\n│ .konfirmasi\n│ .hargaproduk\n│ .strukpembayaran`;
       await this.sock.sendMessage(jid, { text: karyawanText, contextInfo: this.getMenuContextInfo() }, { quoted: this.getFakeMenuQuote(senderJid, msg.pushName || "User") });
       this.broadcastState(`Responded to karyawanmenu command`);
     } else if (body === "groupmenu" || body === ".groupmenu" || body === "group menu" || body === ".group menu") {
-      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       const groupText = `👥 *Group Menu*
 
 │ .hidetag
@@ -1409,7 +1409,6 @@ Ketik menu yang kamu inginkan.`;
       await this.sock.sendMessage(jid, { text: groupText, contextInfo: this.getMenuContextInfo() }, { quoted: this.getFakeMenuQuote(senderJid, msg.pushName || "User") });
       this.broadcastState(`Responded to groupmenu command`);
     } else if (body === "downloadmenu" || body === ".downloadmenu" || body === "download menu" || body === ".download menu") {
-      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       const downloadText = `📥 *Download Menu*\n\n│ .tiktok - download video dari link tiktok VT\n│ .tiktokaudiomp3 - download audio dari tiktok\n│ .playyt - mencari dan mendownload audio Youtube\n│ .playytmp4 - mencari dan mendownload video Youtube\n│ .capcut - download template capcut\n│ .facebook - download video/reels facebook\n│ .instagram - download reels instagram\n│ .fotoanime - ambil foto anime random\n│ .fotosexy - ambil foto random\n│ .pinterest - download foto pinterest\n│ .ttsaudio - text to speech audio\n│ .tiktokslide - download tiktok slide\n│ .ssweb - screenshot web\n│ .gdrive - download google drive\n│ .mediafire - download mediafire
 │ .videosexybikini - download video sexy bikini random
 │ .vidsexyjepang - download video sexy bikini jepang
@@ -1419,7 +1418,6 @@ Ketik menu yang kamu inginkan.`;
       await this.sock.sendMessage(jid, { text: downloadText, contextInfo: this.getMenuContextInfo() }, { quoted: this.getFakeMenuQuote(senderJid, msg.pushName || "User") });
       this.broadcastState(`Responded to downloadmenu command`);
     } else if (body === "stickermenu" || body === ".stickermenu" || body === "sticker menu" || body === ".sticker menu") {
-      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       const stickerText = `🎨 *Sticker Menu*\n\n│ .stiker - ubah gambar jadi stiker\n│ .hd - tingkatkan resolusi gambar\n│ .brat - buat stiker teks brat\n│ .bratvid - buat stiker teks video brat\n│ .smeme - buat stiker dengan teks|teks\n│ .qc - buat stiker text chat\n│ .toimg - stiker ke gambar\n│ .togif - gambar ke gif\n│ .tovideo - ubah stiker ke video
 │ .tostiker - buat stiker dari video\n│ .rvo - read view once\n│ .hdvid - tingkatkan resolusi video\n│ .emojimix - gabungkan dua emoji\n│ .emojigif - buat emoji jadi gif\n│ .bratgambar - buat stiker brat dari gambar\n│ .attp - buat stiker teks animasi warna warni
 │ .logo - buat logo text
@@ -1427,32 +1425,26 @@ Ketik menu yang kamu inginkan.`;
       await this.sock.sendMessage(jid, { text: stickerText, contextInfo: this.getMenuContextInfo() }, { quoted: this.getFakeMenuQuote(senderJid, msg.pushName || "User") });
       this.broadcastState(`Responded to stickermenu command`);
     } else if (body === "kristenmenu" || body === ".kristenmenu" || body === "kristen menu" || body === ".kristen menu") {
-      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       const kristenText = `✝️ *Kristen Menu*\n\n│ .ayatalkitab\n│ .doaayat\n│ .kisahyesus\n│ .jadwalgereja\n│ .namakitab`;
       await this.sock.sendMessage(jid, { text: kristenText, contextInfo: this.getMenuContextInfo() }, { quoted: this.getFakeMenuQuote(senderJid, msg.pushName || "User") });
       this.broadcastState(`Responded to kristenmenu command`);
     } else if (body === "islammenu" || body === ".islammenu" || body === "islam menu" || body === ".islam menu") {
-      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       const islamText = `☪️ *Islam Menu*\n\n│ .ayatkursi\n│ .tekssholat\n│ .hadits\n│ .jadwalsholat\n│ .kisahnabi\n│ .niatsholat\n│ .quotesislami`;
       await this.sock.sendMessage(jid, { text: islamText, contextInfo: this.getMenuContextInfo() }, { quoted: this.getFakeMenuQuote(senderJid, msg.pushName || "User") });
       this.broadcastState(`Responded to islammenu command`);
     } else if (body === "funmenu" || body === ".funmenu" || body === "fun menu" || body === ".fun menu") {
-      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       const funText = `🤡 *Fun Menu*\n\n│ .cekkhodam\n│ .cekganteng\n│ .cekcantik\n│ .cekjodoh\n│ .ceklesby\n│ .cekpasangan\n│ .cekgay\n│ .cekhoby\n│ .cekkesetiaan\n│ .jadian\n│ .kiss\n│ .quotes\n│ .avatar\n│ .ppcouple\n│ .ceksifat\n│ .cekkenakalan\n│ .cekperawan\n│ .cekperjaka\n│ .cekjanda\n│ .cekduda\n│ .bego\n│ .rate\n│ .top\n│ .infonegara\n│ .cekwibu\n│ .meme\n│ .waifu\n│ .ceksange\n│ .cekkaya\n│ .cekbucin\n│ .artinama\n│ .cekmasadepan\n│ .faktadunia\n│ .cekgempa\n│ .cekcuaca`;
       await this.sock.sendMessage(jid, { text: funText, contextInfo: this.getMenuContextInfo() }, { quoted: this.getFakeMenuQuote(senderJid, msg.pushName || "User") });
       this.broadcastState(`Responded to funmenu command`);
     } else if (body === "cecanmenu" || body === ".cecanmenu" || body === "cecan menu" || body === ".cecan menu") {
-      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       const cecanText = `👩 *Cecan Menu*\n\n│ .cecanchina\n│ .cecanhijab\n│ .cecanindonesia\n│ .cecanjapan\n│ .cecanjeni\n│ .cecanjiso\n│ .cecankorea\n│ .cecanmalaysia\n│ .cecanjustinaxie\n│ .cecanrose\n│ .cecanthailand\n│ .cecanvietnam`;
       await this.sock.sendMessage(jid, { text: cecanText, contextInfo: this.getMenuContextInfo() }, { quoted: this.getFakeMenuQuote(senderJid, msg.pushName || "User") });
       this.broadcastState(`Responded to cecanmenu command`);
     } else if (body === "animemenu" || body === ".animemenu" || body === "anime menu" || body === ".anime menu") {
-      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       const animeText = `🦊 *Anime Menu*\n\n│ .animeakira\n│ .animeasuna\n│ .animeeba\n│ .animeelaina\n│ .animeemilia\n│ .animegremory\n│ .animehinata\n│ .animehusbu\n│ .animeisuzu\n│ .animeitori\n│ .animekagura\n│ .animekanna\n│ .animemiku\n│ .animenezuko\n│ .animeloli\n│ .animepokemon\n│ .animerem\n│ .animeryuko\n│ .animeshina\n│ .animeshinka\n│ .animeshota\n│ .animetejina\n│ .animetoukachan`;
       await this.sock.sendMessage(jid, { text: animeText, contextInfo: this.getMenuContextInfo() }, { quoted: this.getFakeMenuQuote(senderJid, msg.pushName || "User") });
       this.broadcastState(`Responded to animemenu command`);
     } else if (body === "sertifikatmenu" || body === ".sertifikatmenu" || body === "sertifikat menu" || body === ".sertifikat menu") {
-      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       const sertifikatText = `🎓 *Sertifikat Menu*\n\n│ .stkbaik\n│ .stkcantik\n│ .stkganteng\n│ .stkhitam\n│ .stkmiskin\n│ .stkkaya\n│ .stkmarah\n│ .stksabar\n│ .stksakit\n│ .stkkeren\n│ .stkmisterius\n│ .stksntai\n\n│ .stksombong\n│ .stklucu\n│ .stkgila\n│ .stkstress\n\n*Gunakan dengan nama, contoh: .stkbaik Agus*`;
       await this.sock.sendMessage(jid, { text: sertifikatText, contextInfo: this.getMenuContextInfo() }, { quoted: this.getFakeMenuQuote(senderJid, msg.pushName || "User") });
       this.broadcastState(`Responded to sertifikatmenu command`);
@@ -1498,32 +1490,26 @@ Ketik menu yang kamu inginkan.`;
          }
       }
     } else if (body === "rpgmenu" || body === ".rpgmenu" || body === "rpg menu" || body === ".rpg menu") {
-      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       const rpgText = `⚔️ *RPG Menu*\n\n│ .kerja\n│ .fightnaga\n│ .fightkucing\n│ .fightphonix\n│ .mancing\n│ .fightkyubi\n│ .berdagang\n│ .nabung\n│ .mining\n│ .bankcek\n│ .maling\n│ .banknabung\n│ .banktarik\n│ .berkebun\n│ .mulung\n│ .bonus\n│ .gajian\n│ .nebang\n│ .petualang\n│ .upgrade\n│ .transfer\n│ .collect\n│ .referal\n│ .shop\n│ .ojek\n│ .nguli\n│ .casino\n│ .pasar\n│ .berburu\n│ .polisi`;
       await this.sock.sendMessage(jid, { text: rpgText, contextInfo: this.getMenuContextInfo() }, { quoted: this.getFakeMenuQuote(senderJid, msg.pushName || "User") });
       this.broadcastState(`Responded to rpgmenu command`);
     } else if (body === "primbonmenu" || body === ".primbonmenu" || body === "primbon menu" || body === ".primbon menu") {
-      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       const primbonText = `🔮 *Primbon Menu*\n\n│ .pantun\n│ .ceksial\n│ .ramalannasib\n│ .ramalanjodoh\n│ .ramalancinta\n│ .ramalankeburukan\n│ .zodiak\n│ .isidompet\n│ .profesiku\n│ .nulis`;
       await this.sock.sendMessage(jid, { text: primbonText, contextInfo: this.getMenuContextInfo() }, { quoted: this.getFakeMenuQuote(senderJid, msg.pushName || "User") });
       this.broadcastState(`Responded to primbonmenu command`);
     } else if (body === "margamenu" || body === ".margamenu" || body === "marga menu" || body === ".marga menu") {
-      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       const margaText = `👥 *Marga Menu*\n\n│ .cekpariban - masukan marga/boru target agar tau marga/boru dia marpariban atau tidak menurut adat batak\n│ .cektartulang - masukan marga/boru target agar tau marga/boru dia martartulang atau tidak menurut adat batak\n│ .cektarito - masukan marga/boru target agar tau marga/boru dia martarito atau tidak menurut adat batak\n│ .cekpadan - masukan marga/boru target agar tau marga/boru dia marpadan atau tidak menurut adat batak`;
       await this.sock.sendMessage(jid, { text: margaText, contextInfo: this.getMenuContextInfo() }, { quoted: this.getFakeMenuQuote(senderJid, msg.pushName || "User") });
       this.broadcastState(`Responded to margamenu command`);
     } else if (body === "videomenu" || body === ".videomenu" || body === "video menu" || body === ".video menu") {
-      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       const videoText = `🎬 *Video Menu*\n\n│ .tiktokgirl\n│ .tiktoktobrut\n│ .tiktokkayes\n│ .tiktokhot\n│ .tiktokghea\n│ .tiktokbocil\n│ .tiktoklesbi\n│ .tiktokgay\n│ .tiktokartis\n│ .tiktokpacaran\n│ .tiktokanjing\n│ .tiktokkucing\n│ .tiktokfreefire\n│ .tiktokpubg\n│ .tiktoknikah\n│ .tiktokpointblank`;
       await this.sock.sendMessage(jid, { text: videoText, contextInfo: this.getMenuContextInfo() }, { quoted: this.getFakeMenuQuote(senderJid, msg.pushName || "User") });
       this.broadcastState(`Responded to videomenu command`);
     } else if (body === "gamemenu" || body === ".gamemenu" || body === "game menu" || body === ".game menu") {
-            await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       const gameText = `🎮 *Game Menu*\n\n| .tebakgambar\n| .susunkata\n| .math\n| .tebakkata\n| .tebakbendera\n| .asahotak\n| .tebaklirik\n| .tekateki\n| .tebakangka\n| .kuis\n| .tebakkota\n| .family100\n| .tebakusia\n| .tebakkimia\n| .tebakbuah\n| .werewolf\n| .tebakuang\n| .tebaksurah\n| .tebakhewan\n| .tebakbaju\n| .tebakcelana\n| .tebakmakanan\n| .tebakjkt48\n| .togel\n| .stoptogel\n| .truthordare\n| .ulartangga`;
       await this.sock.sendMessage(jid, { text: gameText, contextInfo: this.getMenuContextInfo() }, { quoted: this.getFakeMenuQuote(senderJid, msg.pushName || "User") });
       this.broadcastState(`Responded to gamemenu command`);
     } else if (body === "ownermenu" || body === ".ownermenu" || body === "owner menu" || body === ".owner menu") {
-      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       if (!isOwner) return await this.sock.sendMessage(jid, { text: `👑 *Akses Ditolak*
 Perintah ini hanya bisa digunakan oleh Owner!` }, { quoted: msg });
       const ownerText = `👑 *Owner Menu*
@@ -2352,7 +2338,6 @@ Pesan pribadi kembali diizinkan.` }, { quoted: msg });
             }
         }
     } else if (body === ".math" || body === "math") {
-      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       const num1 = Math.floor(Math.random() * 100);
       const num2 = Math.floor(Math.random() * 100);
       const ops = ['+', '-', '*'];
@@ -2368,7 +2353,6 @@ Pesan pribadi kembali diizinkan.` }, { quoted: msg });
       }
       this.broadcastState(`Responded to math command`);
     } else if (body === ".susunkata" || body === "susunkata") {
-      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       try {
           const res = await axios.get('https://raw.githubusercontent.com/BochilTeam/database/master/games/susunkata.json');
           if (res.data && res.data.length > 0) {
@@ -2383,7 +2367,6 @@ Pesan pribadi kembali diizinkan.` }, { quoted: msg });
       }
       this.broadcastState(`Responded to susunkata command`);
     } else if (body === ".tebakgambar" || body === "tebakgambar") {
-      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       try {
           const res = await axios.get('https://raw.githubusercontent.com/BochilTeam/database/master/games/tebakgambar.json');
           if (res.data && res.data.length > 0) {
@@ -2398,7 +2381,6 @@ Pesan pribadi kembali diizinkan.` }, { quoted: msg });
       }
       this.broadcastState(`Responded to tebakgambar command`);
     } else if (body === ".tebakkata" || body === "tebakkata") {
-      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       try {
           const res = await axios.get('https://raw.githubusercontent.com/BochilTeam/database/master/games/tebakkata.json');
           if (res.data && res.data.length > 0) {
@@ -2413,7 +2395,6 @@ Pesan pribadi kembali diizinkan.` }, { quoted: msg });
       }
       this.broadcastState(`Responded to tebakkata command`);
     } else if (body === ".tebakbendera" || body === "tebakbendera") {
-      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       try {
           const res = await axios.get('https://raw.githubusercontent.com/BochilTeam/database/master/games/tebakbendera.json');
           if (res.data && res.data.length > 0) {
@@ -2429,7 +2410,6 @@ Pesan pribadi kembali diizinkan.` }, { quoted: msg });
       }
       this.broadcastState(`Responded to tebakbendera command`);
     } else if (body === ".asahotak" || body === "asahotak") {
-      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       try {
           const res = await axios.get('https://raw.githubusercontent.com/BochilTeam/database/master/games/asahotak.json');
           if (res.data && res.data.length > 0) {
@@ -2444,7 +2424,6 @@ Pesan pribadi kembali diizinkan.` }, { quoted: msg });
       }
       this.broadcastState(`Responded to asahotak command`);
     } else if (body === ".tebakbuah" || body === "tebakbuah") {
-      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       const buahList = [
           { soal: "🍎", jawaban: "apel" },
           { soal: "🍌", jawaban: "pisang" },
@@ -2472,7 +2451,6 @@ Pesan pribadi kembali diizinkan.` }, { quoted: msg });
       }
       this.broadcastState(`Responded to tebakbuah command`);
     } else if (body === ".tebaklirik" || body === "tebaklirik") {
-      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       try {
           const res = await axios.get('https://raw.githubusercontent.com/BochilTeam/database/master/games/tebaklirik.json');
           if (res.data && res.data.length > 0) {
@@ -2487,7 +2465,6 @@ Pesan pribadi kembali diizinkan.` }, { quoted: msg });
       }
       this.broadcastState(`Responded to tebaklirik command`);
     } else if (body === ".tekateki" || body === "tekateki") {
-      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       try {
           const res = await axios.get('https://raw.githubusercontent.com/BochilTeam/database/master/games/tekateki.json');
           if (res.data && res.data.length > 0) {
@@ -2502,7 +2479,6 @@ Pesan pribadi kembali diizinkan.` }, { quoted: msg });
       }
       this.broadcastState(`Responded to tekateki command`);
     } else if (body === ".kuis" || body === "kuis") {
-      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       try {
           const res = await axios.get('https://raw.githubusercontent.com/BochilTeam/database/master/games/siapakahaku.json');
           if (res.data && res.data.length > 0) {
@@ -2517,7 +2493,6 @@ Pesan pribadi kembali diizinkan.` }, { quoted: msg });
       }
       this.broadcastState(`Responded to kuis command`);
     } else if (body === ".tebakkota" || body === "tebakkota") {
-      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       try {
           const res = await axios.get('https://raw.githubusercontent.com/BochilTeam/database/master/games/tebakkabupaten.json');
           if (res.data && res.data.length > 0) {
@@ -2534,7 +2509,6 @@ Pesan pribadi kembali diizinkan.` }, { quoted: msg });
       }
       this.broadcastState(`Responded to tebakkota command`);
     } else if (body === ".family100" || body === "family100") {
-      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       try {
           const res = await axios.get('https://raw.githubusercontent.com/BochilTeam/database/master/games/family100.json');
           if (res.data && res.data.length > 0) {
@@ -2549,7 +2523,6 @@ Pesan pribadi kembali diizinkan.` }, { quoted: msg });
       }
       this.broadcastState(`Responded to family100 command`);
     } else if (body === ".tebakusia" || body === "tebakusia") {
-      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       const tokoh = [
         { nama: "Joko Widodo (2024)", umur: 63 }, { nama: "Prabowo Subianto (2024)", umur: 73 }, 
         { nama: "Cristiano Ronaldo (2024)", umur: 39 }, { nama: "Lionel Messi (2024)", umur: 37 },
@@ -2564,7 +2537,6 @@ Pesan pribadi kembali diizinkan.` }, { quoted: msg });
       }
       this.broadcastState(`Responded to tebakusia command`);
     } else if (body === ".tebakkimia" || body === "tebakkimia") {
-      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       try {
           const res = await axios.get('https://raw.githubusercontent.com/BochilTeam/database/master/games/tebakkimia.json');
           if (res.data && res.data.length > 0) {
@@ -2579,7 +2551,6 @@ Pesan pribadi kembali diizinkan.` }, { quoted: msg });
       }
       this.broadcastState(`Responded to tebakkimia command`);
     } else if (body === ".tebakangka" || body === "tebakangka") {
-      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       const target = Math.floor(Math.random() * 100) + 1;
       const sentMsg = await this.sock.sendMessage(jid, { text: `🔢 *Game Tebak Angka*\n\nTebak angka dari 1 sampai 100!\n\n_Silakan balas (reply) pesan ini dengan angka tebakanmu!_` }, { quoted: msg });
       if (sentMsg?.key?.id) {
@@ -2587,13 +2558,11 @@ Pesan pribadi kembali diizinkan.` }, { quoted: msg });
       }
       this.broadcastState(`Responded to tebakangka command`);
     } else if (body === ".werewolf" || body === "werewolf") {
-      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       
       this.activeGames.set("werewolf_" + jid, { type: "werewolf", state: "joining", players: [senderJid], answer: "" });
       await this.sock.sendMessage(jid, { text: `🐺 *Game Werewolf*\n\nGame dibuat! Ketik .joinww untuk bergabung!\nPemain: 1` }, { quoted: msg });
       this.broadcastState(`Responded to werewolf command`);
     } else if (body === ".tebakuang" || body === "tebakuang") {
-      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       const data = [
         { soal: "Mata uang negara Jepang?", jawaban: "Yen" },
         { soal: "Mata uang negara Amerika Serikat?", jawaban: "Dollar" },
@@ -2608,7 +2577,6 @@ Pesan pribadi kembali diizinkan.` }, { quoted: msg });
       }
       this.broadcastState(`Responded to tebakuang command`);
     } else if (body === ".tebaksurah" || body === "tebaksurah") {
-      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       const data = [
         { soal: "Surah pembuka dalam Al-Quran?", jawaban: "Al-Fatihah" },
         { soal: "Surah yang menceritakan tentang sapi betina?", jawaban: "Al-Baqarah" },
@@ -2623,7 +2591,6 @@ Pesan pribadi kembali diizinkan.` }, { quoted: msg });
       }
       this.broadcastState(`Responded to tebaksurah command`);
     } else if (body === ".tebakhewan" || body === "tebakhewan") {
-      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       const data = [
         { soal: "Hewan mamalia berleher panjang?", jawaban: "Jerapah" },
         { soal: "Hewan yang memiliki belalai?", jawaban: "Gajah" },
@@ -2638,7 +2605,6 @@ Pesan pribadi kembali diizinkan.` }, { quoted: msg });
       }
       this.broadcastState(`Responded to tebakhewan command`);
     } else if (body === ".tebakbaju" || body === "tebakbaju") {
-      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       const data = [
         { soal: "Pakaian atasan berkerah yang biasa dipakai untuk acara formal?", jawaban: "Kemeja" },
         { soal: "Pakaian tradisional wanita Indonesia?", jawaban: "Kebaya" },
@@ -2653,7 +2619,6 @@ Pesan pribadi kembali diizinkan.` }, { quoted: msg });
       }
       this.broadcastState(`Responded to tebakbaju command`);
     } else if (body === ".tebakcelana" || body === "tebakcelana") {
-      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       const data = [
         { soal: "Celana yang berbahan denim?", jawaban: "Jeans" },
         { soal: "Celana longgar untuk berolahraga?", jawaban: "Training" },
@@ -3764,7 +3729,6 @@ _Catatan: Dikirim sbg dokumen karena terjadi error konversi._` }, { quoted: msg 
       }
     
     } else if (body === "aimenu" || body === ".aimenu" || body === "ai menu" || body === ".ai menu") {
-      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       const aiText = `🤖 *AI Menu*
 
 │ .midjourney <prompt>
@@ -3777,7 +3741,6 @@ _Catatan: Dikirim sbg dokumen karena terjadi error konversi._` }, { quoted: msg 
       await this.sock.sendMessage(jid, { text: aiText, contextInfo: this.getMenuContextInfo() }, { quoted: this.getFakeMenuQuote(senderJid, msg.pushName || "User") });
       this.broadcastState(`Responded to aimenu command`);
     } else if (body === "bokepmenu" || body === ".bokepmenu" || body === "bokep menu" || body === ".bokep menu") {
-      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       const bokepText = `🔞 *Bokep Menu*
 
 │ .vidbokepindonesia
@@ -4026,7 +3989,6 @@ Link referensi: ${randomItem.link}` }, { quoted: msg });
             await this.sock.sendMessage(jid, { text: `❌ *Gagal memproses video.*` }, { quoted: msg });
         }
     } else if (body === "hentaimenu" || body === ".hentaimenu" || body === "hentai menu" || body === ".hentai menu") {
-      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       const hentaiText = `🔞 *Hentai Menu*\n\n│ .hentai\n│ .nsfw\n│ .nsfwahegao\n│ .nsfwass\n│ .nsfwbdsm\n│ .nsfwgangbang\n│ .nsfwgay\n│ .nsfwloli\n│ .nsfwneko\n│ .nsfwpussy\n│ .nsfwzettai`;
       await this.sock.sendMessage(jid, { text: hentaiText, contextInfo: this.getMenuContextInfo() }, { quoted: this.getFakeMenuQuote(senderJid, msg.pushName || "User") });
       this.broadcastState(`Responded to hentaimenu command`);
@@ -4086,7 +4048,6 @@ Link referensi: ${randomItem.link}` }, { quoted: msg });
     
     
     } else if (body === "coganmenu" || body === ".coganmenu" || body === "cogan menu" || body === ".cogan menu") {
-      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       const coganText = `👨 *Cogan Menu*
 
 │ .coganiqbaal
@@ -4145,7 +4106,6 @@ Link referensi: ${randomItem.link}` }, { quoted: msg });
         }
       }
     } else if (body === "postermenu" || body === ".postermenu" || body === "poster menu" || body === ".poster menu") {
-      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       const posterText = `🎬 *Poster Menu*
 
 │ .pengabdisetan
@@ -4196,12 +4156,10 @@ Link referensi: ${randomItem.link}` }, { quoted: msg });
         }
       }
     } else if (body === "cdramamenu" || body === ".cdramamenu" || body === "cdrama menu" || body === ".cdrama menu") {
-      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       const cdramaText = `🎭 *C-Drama Menu*\n\n│ .dramaromantis\n│ .dramakomedi\n│ .dramamisteri\n│ .dramakerajaan\n│ .dramakeluarga\n│ .dramaperang\n│ .dramaxianxia\n│ .dramakriminal\n│ .dramafantasi`;
       await this.sock.sendMessage(jid, { text: cdramaText, contextInfo: this.getMenuContextInfo() }, { quoted: this.getFakeMenuQuote(senderJid, msg.pushName || "User") });
       this.broadcastState(`Responded to cdramamenu command`);
     } else if (body === "hewanmenu" || body === ".hewanmenu" || body === "hewan menu" || body === ".hewan menu") {
-      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       const hewanText = `🐾 *Hewan Menu*\n\n│ .catcanvas\n│ .dogcanvas\n│ .foxcanvas\n│ .wolfcanvas\n│ .lioncanvas\n│ .tigercanvas\n│ .pandacanvas\n│ .bunnycanvas\n│ .owlcanvas\n│ .eaglecanvas\n│ .capycanvas\n│ .penguincanvas`;
       await this.sock.sendMessage(jid, { text: hewanText, contextInfo: this.getMenuContextInfo() }, { quoted: this.getFakeMenuQuote(senderJid, msg.pushName || "User") });
       this.broadcastState(`Responded to hewanmenu command`);
@@ -4233,7 +4191,6 @@ Link referensi: ${randomItem.link}` }, { quoted: msg });
            }
        }
     } else if (body === "hantumenu" || body === ".hantumenu" || body === "hantu menu" || body === ".hantu menu") {
-      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       const hantuText = `👻 *Hantu Menu*\n\n│ .fotpocong\n│ .fotkuntilanak\n│ .fotgenderuwo\n│ .fotwewegombel\n│ .fottuyul\n│ .fotsundelbolong\n│ .fotpalasik\n│ .fotkuyang\n│ .fotbanaspati\n│ .fotjelangkung\n│ .fotsiluman\n│ .fotnyirorokidul\n│ .fotgundulpringis`;
       await this.sock.sendMessage(jid, { text: hantuText, contextInfo: this.getMenuContextInfo() }, { quoted: this.getFakeMenuQuote(senderJid, msg.pushName || "User") });
       this.broadcastState(`Responded to hantumenu command`);
@@ -5771,14 +5728,12 @@ Link referensi: ${randomItem.link}` }, { quoted: msg });
         await this.sock.sendMessage(jid, { text: "❌ Gunakan perintah ini di dalam grup atau berikan link grup.\nContoh: .cekidgc https://chat.whatsapp.com/xxxx" }, { quoted: msg });
       }
     } else if (body === ".tebakmakanan" || body === "tebakmakanan") {
-      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       const clue = ["Bentuknya bulat, ada yang manis ada yang gurih, tengahnya bolong.", "Donat"];
       const sentMsg = await this.sock.sendMessage(jid, { text: `🍔 *Tebak Makanan*\n\nClue: ${clue[0]}\n_Silakan balas (reply) pesan ini dengan jawabanmu!_` }, { quoted: msg });
       if (sentMsg?.key?.id) {
           this.activeGames.set(sentMsg.key.id, { answer: clue[1], type: "tebakmakanan" });
       }
     } else if (body === ".tebakjkt48" || body === "tebakjkt48") {
-      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       const members = ["Zee", "Freya", "Adel", "Gracia", "Shani", "Christy", "Marsha"];
       const randomMember = members[Math.floor(Math.random() * members.length)];
       const scrambled = randomMember.split('').sort(() => 0.5 - Math.random()).join('');
@@ -5787,7 +5742,6 @@ Link referensi: ${randomItem.link}` }, { quoted: msg });
           this.activeGames.set(sentMsg.key.id, { answer: randomMember, type: "tebakjkt48" });
       }
     } else if (body === ".truthordare" || body === "truthordare") {
-      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       const isTruth = Math.random() < 0.5;
       const truths = ["Kapan terakhir kali kamu menangis?", "Apa rahasia terbesar yang tidak pernah kamu beri tahu pada siapapun?", "Siapa orang yang paling kamu benci di grup ini?", "Apa kebohongan terbesar yang pernah kamu katakan pada orang tuamu?", "Pernahkah kamu menyukai pacar temanmu sendiri?"];
       const dares = ["Kirim pesan suara (voice note) dengan suara hantu ke grup ini", "Jadikan foto profilmu foto konyol selama 24 jam", "Kirim pesan 'aku sayang kamu' ke mantanmu sekarang juga (sertakan screenshot)", "Spam chat grup ini dengan emoji 🐵 sebanyak 20 kali", "Nyanyikan lagu potong bebek angsa dengan nada marah dan kirim ke grup"];
@@ -5795,7 +5749,6 @@ Link referensi: ${randomItem.link}` }, { quoted: msg });
       const type = isTruth ? "Truth 🗣️" : "Dare 🎯";
       await this.sock.sendMessage(jid, { text: `🎭 *Truth or Dare*\n\nTerpilih: *${type}*\nTantangan/Pertanyaan: ${selected}` }, { quoted: msg });
     } else if (body.startsWith(".ulartangga") || body.startsWith("ulartangga")) {
-      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       const args = body.split(" ").slice(1);
       const cmdArg = args[0] ? args[0].toLowerCase() : "";
       const gameKey = "ulartangga_" + jid;
@@ -5968,7 +5921,6 @@ Link referensi: ${randomItem.link}` }, { quoted: msg });
            await this.sock.sendMessage(jid, { text: `❌ Gagal mencari wallpaper.` }, { quoted: msg });
        }
     } else if (body.startsWith(".togel ") || body.startsWith("togel ")) {
-      await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       const guess = body.split(" ")[1];
       if (!/^\d{4}$/.test(guess)) {
         await this.sock.sendMessage(jid, { text: "❌ Format salah! Kirim .togel [4 digit angka]\nContoh: .togel 1234" }, { quoted: msg });
@@ -5981,7 +5933,6 @@ Link referensi: ${randomItem.link}` }, { quoted: msg });
         }
       }
     } else if (body === ".stoptogel" || body === "stoptogel") {
-       await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       await this.sock.sendMessage(jid, { text: "🛑 *Sesi togel dihentikan!*" }, { quoted: msg });
     } else if (body.startsWith(".cekpariban") || body.startsWith("cekpariban") || body.startsWith(".cektartulang") || body.startsWith("cektartulang") || body.startsWith(".cektarito") || body.startsWith("cektarito") || body.startsWith(".cekpadan") || body.startsWith("cekpadan")) {
        let cmd = body.split(" ")[0].replace(".", "");
@@ -6121,7 +6072,6 @@ Link referensi: ${randomItem.link}` }, { quoted: msg });
         let argsStr = messageContent.slice(messageContent.toLowerCase().indexOf(cmd) + cmd.length).trim();
         
         if (cmd === "devicemenu") {
-            await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
             const deviceText = `📱 *Device Menu*\n\n│ .battery\n│ .deviceinfo\n│ .cpuinfo\n│ .raminfo\n│ .storage\n│ .network\n│ .pingphone\n│ .sensor\n│ .apkinfo\n│ .appcheck`;
             await this.sock.sendMessage(jid, { text: deviceText, contextInfo: this.getMenuContextInfo() }, { quoted: this.getFakeMenuQuote(senderJid, msg.pushName || "User") });
             this.broadcastState(`Responded to devicemenu command`);
@@ -6165,7 +6115,6 @@ Link referensi: ${randomItem.link}` }, { quoted: msg });
         let argsStr = messageContent.slice(messageContent.toLowerCase().indexOf(cmd) + cmd.length).trim();
         
         if (cmd === "toolsmenu") {
-            await this.sendLoadingAnimation(jid, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
             const toolsText = `🛠️ *Tools Menu*\n\n│ .barcode\n│ .qrcode\n│ .dnslookup\n│ .whois\n\n│ .httpheader\n│ .shortlink\n│ .myip\n│ .ipinfo\n│ .hostcheck\n│ .countdown\n│ .iplookup\n│ .subdomain`;
             await this.sock.sendMessage(jid, { text: toolsText, contextInfo: this.getMenuContextInfo() }, { quoted: this.getFakeMenuQuote(senderJid, msg.pushName || "User") });
             this.broadcastState(`Responded to toolsmenu command`);
