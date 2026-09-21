@@ -49,6 +49,9 @@ private karyawanData = {
   private currentQr: string | null = null;
   private isAttemptingStart: boolean = false;
   private coverImageBuffer: Buffer | null = null;
+  private coverVideoBuffer: Buffer | null = null;
+  private coverImageFile: string;
+  private coverVideoFile: string;
   private customBotName: string | null = null;
   private textNama: string | null = "KYYINFINITE";
   private channelJid: string | null = '120363299949984606@newsletter';
@@ -87,7 +90,9 @@ private karyawanData = {
     this.settingsFile = path.join(process.cwd(), `group_settings_${userEmail.replace(/[^a-zA-Z0-9]/g, '_')}.json`);
     this.botSettingsFile = path.join(process.cwd(), `bot_settings_${userEmail.replace(/[^a-zA-Z0-9]/g, '_')}.json`);
     this.karyawanDataFile = path.join(process.cwd(), `karyawan_data_${userEmail.replace(/[^a-zA-Z0-9]/g, '_')}.json`);
-this.loadBotSettings();
+    this.coverImageFile = path.join(process.cwd(), `cover_image_${userEmail.replace(/[^a-zA-Z0-9]/g, '_')}.bin`);
+    this.coverVideoFile = path.join(process.cwd(), `cover_video_${userEmail.replace(/[^a-zA-Z0-9]/g, '_')}.mp4`);
+    this.loadBotSettings();
     this.loadGroupSettings();
     this.loadKaryawanData();
     
@@ -131,6 +136,12 @@ this.loadBotSettings();
       }
       if (obj.registeredUsers !== undefined) {
         this.registeredUsers = new Map(Object.entries(obj.registeredUsers));
+      }
+      if (this.coverImageFile && fs.existsSync(this.coverImageFile)) {
+        try { this.coverImageBuffer = fs.readFileSync(this.coverImageFile); } catch(e) {}
+      }
+      if (this.coverVideoFile && fs.existsSync(this.coverVideoFile)) {
+        try { this.coverVideoBuffer = fs.readFileSync(this.coverVideoFile); } catch(e) {}
       }
     } catch {
       // ignore
@@ -246,6 +257,27 @@ private loadKaryawanData() {
               serverMessageId: -1
           }
       };
+  }
+
+  private async sendMenuWithCover(jid: string, text: string, quoted: any) {
+      if (this.coverImageBuffer && this.coverVideoBuffer) {
+          await this.sock.sendMessage(jid, { image: this.coverImageBuffer, contextInfo: this.getMenuContextInfo() }, { quoted });
+          try {
+              await this.sock.sendMessage(jid, { video: this.coverVideoBuffer, caption: text, mimetype: "video/mp4", gifPlayback: true, contextInfo: this.getMenuContextInfo() }, { quoted });
+          } catch {
+              await this.sock.sendMessage(jid, { video: this.coverVideoBuffer, caption: text, mimetype: "video/mp4", contextInfo: this.getMenuContextInfo() }, { quoted });
+          }
+      } else if (this.coverVideoBuffer) {
+          try {
+              await this.sock.sendMessage(jid, { video: this.coverVideoBuffer, caption: text, mimetype: "video/mp4", gifPlayback: true, contextInfo: this.getMenuContextInfo() }, { quoted });
+          } catch {
+              await this.sock.sendMessage(jid, { video: this.coverVideoBuffer, caption: text, mimetype: "video/mp4", contextInfo: this.getMenuContextInfo() }, { quoted });
+          }
+      } else if (this.coverImageBuffer) {
+          await this.sock.sendMessage(jid, { image: this.coverImageBuffer, caption: text, contextInfo: this.getMenuContextInfo() }, { quoted });
+      } else {
+          await this.sock.sendMessage(jid, { text: text, contextInfo: this.getMenuContextInfo() }, { quoted });
+      }
   }
 
   private async generateLocalBratVid(text: string): Promise<Buffer> {
@@ -1090,7 +1122,7 @@ private loadKaryawanData() {
     }
     
     const requestedCmd = body.split(/[\s\n]+/)[0];
-    const ownerCommands = ['.addtextnama', 'addtextnama', '.deltextnama', 'deltextnama', '.ownermenu', 'ownermenu', '.antibot', 'antibot', '.autoread', 'autoread', '.savekontak', 'savekontak', '.broadcast', 'broadcast', '.restartbot', 'restartbot', '.addpremium', 'addpremium', '.addprem', 'addprem', '.addowner', 'addowner', '.delowner', 'delowner', '.listowner', 'listowner', '.listpremium', 'listpremium', '.delpremium', 'delpremium', '.setbotpp', 'setbotpp', '.setbotname', 'setbotname', '.addnamabot', 'addnamabot', '.delnamabot', 'delnamabot', '.totalfitur', 'totalfitur', '.addprefix', 'addprefix', '.delprefix', 'delprefix', '.listprefix', 'listprefix', '.addpoweredby', 'addpoweredby', '.delpoweredby', 'delpoweredby', '.listpoweredby', 'listpoweredby', '.linkset', 'linkset', '.dellinkset', 'dellinkset', '.addcmd', 'addcmd', '.delcmd', 'delcmd', '.listcmd', 'listcmd', '.self', 'self', '.publik', 'publik', '.setcoverbot', 'setcoverbot', '.delcoverbot', 'delcoverbot', '.anticall', 'anticall', '.autotyping', 'autotyping', '.addsewa', 'addsewa', '.delsewa', 'delsewa', '.listsewa', 'listsewa', '.joingc', 'joingc', '.creategc', 'creategc', '.addsticker', 'addsticker', '.delsticker', 'delsticker', '.addlimit', 'addlimit', '.dellimit', 'dellimit', '.listlimit', 'listlimit', '.autoblockprivate', 'autoblockprivate', '.delautoblockprivate', 'delautoblockprivate'];
+    const ownerCommands = ['.addtextnama', 'addtextnama', '.deltextnama', 'deltextnama', '.ownermenu', 'ownermenu', '.antibot', 'antibot', '.autoread', 'autoread', '.savekontak', 'savekontak', '.broadcast', 'broadcast', '.restartbot', 'restartbot', '.addpremium', 'addpremium', '.addprem', 'addprem', '.addowner', 'addowner', '.delowner', 'delowner', '.listowner', 'listowner', '.listpremium', 'listpremium', '.delpremium', 'delpremium', '.setbotpp', 'setbotpp', '.setbotname', 'setbotname', '.addnamabot', 'addnamabot', '.delnamabot', 'delnamabot', '.totalfitur', 'totalfitur', '.addprefix', 'addprefix', '.delprefix', 'delprefix', '.listprefix', 'listprefix', '.addpoweredby', 'addpoweredby', '.delpoweredby', 'delpoweredby', '.listpoweredby', 'listpoweredby', '.linkset', 'linkset', '.dellinkset', 'dellinkset', '.addcmd', 'addcmd', '.delcmd', 'delcmd', '.listcmd', 'listcmd', '.self', 'self', '.publik', 'publik', '.setcoverbot', 'setcoverbot', '.delcoverbot', 'delcoverbot', '.setcovervideo', 'setcovervideo', '.delsetcovervideo', 'delsetcovervideo', '.delcovervideo', 'delcovervideo', '.anticall', 'anticall', '.autotyping', 'autotyping', '.addsewa', 'addsewa', '.delsewa', 'delsewa', '.listsewa', 'listsewa', '.joingc', 'joingc', '.creategc', 'creategc', '.addsticker', 'addsticker', '.delsticker', 'delsticker', '.addlimit', 'addlimit', '.dellimit', 'dellimit', '.listlimit', 'listlimit', '.autoblockprivate', 'autoblockprivate', '.delautoblockprivate', 'delautoblockprivate'];
     const groupCommands = ['.afk', 'afk', '.joinch', 'joinch', '.cekidgc', 'cekidgc', '.infouser', 'infouser', '.tagadmin', 'tagadmin', '.infogrup', 'infogrup', '.leaderboard', 'leaderboard', '.totalchat', 'totalchat', '.groupmenu', 'groupmenu', '.delete', 'delete', '.hidetag', 'hidetag', '.kick', 'kick', '.add', 'add', '.open', 'open', '.close', 'close', '.open2', 'open2', '.close2', 'close2', '.antilinkall', 'antilinkall', '.linkgc', 'linkgc', '.setppgc', 'setppgc', '.delppgc', 'delppgc', '.setwelcome', 'setwelcome', '.setbye', 'setbye', '.welcome', 'welcome', '.goodbye', 'goodbye', '.antitagsw', 'antitagsw', '.antivideo', 'antivideo', '.antifoto', 'antifoto', '.antifoto1x', 'antifoto1x', '.antistiker', 'antistiker', '.antispam', 'antispam', '.setnamegc', 'setnamegc', '.setdescgc', 'setdescgc', '.culikswgc', 'culikswgc', '.culikprofilegc', 'culikprofilegc', '.kickall', 'kickall', '.sewabot', 'sewabot', '.promote', 'promote', '.demote', 'demote', '.werewolf', 'werewolf', '.joinww', 'joinww', '.startww', 'startww', '.mutegc', 'mutegc', '.resetlink', 'resetlink', '.tagall', 'tagall', '.setbotbio', 'setbotbio', '.delbotbio', 'delbotbio', '.antivirtex', 'antivirtex', '.antitoxic', 'antitoxic', '.menfess', 'menfess', '.confess', 'confess', '.balasmenfess', 'balasmenfess', '.tolakmenfess', 'tolakmenfess', '.stopmenfess', 'stopmenfess', '.warn', 'warn', '.listwarn', 'listwarn', '.delwarn', 'delwarn', '.infowarn', 'infowarn'];
     const funCommands = ['.ceksifat', 'ceksifat', '.cekkenakalan', 'cekkenakalan', '.cekperawan', 'cekperawan', '.cekperjaka', 'cekperjaka', '.cekjanda', 'cekjanda', '.cekduda', 'cekduda', '.bego', 'bego', '.rate', 'rate', '.top', 'top', '.funmenu', 'funmenu', '.cekkhodam', 'cekkhodam', '.cekganteng', 'cekganteng', '.cekcantik', 'cekcantik', '.cekjodoh', 'cekjodoh', '.ceklesby', 'ceklesby', '.cekpasangan', 'cekpasangan', '.cekgay', 'cekgay', '.cekhoby', 'cekhoby', '.cekkesetiaan', 'cekkesetiaan', '.jadian', 'jadian', '.kiss', 'kiss', '.quotes', 'quotes', '.avatar', 'avatar', '.ppcouple', 'ppcouple', '.infonegara', 'infonegara', '.cekwibu', 'cekwibu', '.meme', 'meme', '.waifu', 'waifu', '.ceksange', 'ceksange', '.cekkaya', 'cekkaya', '.cekbucin', 'cekbucin', '.artinama', 'artinama', '.cekmasadepan', 'cekmasadepan', '.faktadunia', 'faktadunia', '.cekgempa', 'cekgempa', '.cekcuaca', 'cekcuaca'];
     const margaCommands = ['.margamenu', 'margamenu', '.cekpariban', 'cekpariban', '.cektartulang', 'cektartulang', '.cektarito', 'cektarito', '.cekpadan', 'cekpadan'];
@@ -1311,11 +1343,7 @@ Ketik menu yang kamu inginkan.`;
       const botJid = this.sock.user?.id ? this.sock.user.id.split(':')[0] + '@s.whatsapp.net' : '6281234567890@s.whatsapp.net';
       
       try {
-        if (this.coverImageBuffer) {
-          await this.sock.sendMessage(jid, { image: this.coverImageBuffer, caption: menu, contextInfo: this.getMenuContextInfo() }, { quoted: this.getFakeMenuQuote(senderJid, msg.pushName || "User") });
-        } else {
-          await this.sock.sendMessage(jid, { text: menu, contextInfo: this.getMenuContextInfo() }, { quoted: this.getFakeMenuQuote(senderJid, msg.pushName || "User") });
-        }
+        await this.sendMenuWithCover(jid, menu, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
         
         this.broadcastState(`Responded to allmenu command`);
       } catch (err: any) {
@@ -1542,6 +1570,7 @@ Perintah ini hanya bisa digunakan oleh Owner!` }, { quoted: msg });
 │ .listcmd
 │ .self / .publik
 │ .setcoverbot / .delcoverbot
+│ .setcovervideo / .delsetcovervideo
 │ .anticall on/off
 │ .antibot on/off
 │ .autoread on/off
@@ -1558,9 +1587,7 @@ Perintah ini hanya bisa digunakan oleh Owner!` }, { quoted: msg });
 │ .delsticker - hapus stiker
 │ .totalfitur`;
       
-      let msgObj: any = { text: ownerText, contextInfo: this.getMenuContextInfo() };
-      if (this.coverImageBuffer) msgObj = { image: this.coverImageBuffer, caption: ownerText, contextInfo: this.getMenuContextInfo() };
-      await this.sock.sendMessage(jid, msgObj, { quoted: this.getFakeMenuQuote(senderJid, msg.pushName || "User") });
+      await this.sendMenuWithCover(jid, ownerText, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       
       this.broadcastState(`Responded to ownermenu command`);
     
@@ -3073,6 +3100,9 @@ Contoh: .delowner 628xxx` }, { quoted: msg });
         try {
            const buffer = await downloadMediaMessage(mediaMessage as any, 'buffer', {}, { logger: pino({ level: 'silent' }) as any, reuploadRequest: this.sock.updateMediaMessage });
            this.coverImageBuffer = buffer as Buffer;
+           if (this.coverImageFile) {
+             try { fs.writeFileSync(this.coverImageFile, buffer); } catch(e) {}
+           }
            await this.sock.sendMessage(jid, { text: `✅ Berhasil mengatur cover bot!` }, { quoted: msg });
         } catch (e) {
            await this.sock.sendMessage(jid, { text: `❌ Gagal memproses gambar!` }, { quoted: msg });
@@ -3082,7 +3112,35 @@ Contoh: .delowner 628xxx` }, { quoted: msg });
       }
     } else if (body.startsWith(".delcoverbot") || body.startsWith("delcoverbot")) {
       this.coverImageBuffer = null;
+      if (this.coverImageFile && fs.existsSync(this.coverImageFile)) {
+        try { fs.unlinkSync(this.coverImageFile); } catch(e) {}
+      }
       await this.sock.sendMessage(jid, { text: `✅ Berhasil menghapus cover bot!` }, { quoted: msg });
+    } else if (body.startsWith(".setcovervideo") || body.startsWith("setcovervideo")) {
+      const isQuotedVideo = msg.message?.extendedTextMessage?.contextInfo?.quotedMessage?.videoMessage;
+      const isVideo = msg.message?.videoMessage;
+      const mediaMessage = isQuotedVideo ? { message: { videoMessage: isQuotedVideo } } : (isVideo ? msg : null);
+      
+      if (mediaMessage) {
+        try {
+           const buffer = await downloadMediaMessage(mediaMessage as any, 'buffer', {}, { logger: pino({ level: 'silent' }) as any, reuploadRequest: this.sock.updateMediaMessage });
+           this.coverVideoBuffer = buffer as Buffer;
+           if (this.coverVideoFile) {
+             try { fs.writeFileSync(this.coverVideoFile, buffer); } catch(e) {}
+           }
+           await this.sock.sendMessage(jid, { text: `✅ Berhasil mengatur cover video bot!\nThumbnail video mp4 akan muncul di bawah coverbot di bot.` }, { quoted: msg });
+        } catch (e: any) {
+           await this.sock.sendMessage(jid, { text: `❌ Gagal memproses video: ${e.message || e}` }, { quoted: msg });
+        }
+      } else {
+        await this.sock.sendMessage(jid, { text: `Kirim atau balas video mp4 dengan caption .setcovervideo` }, { quoted: msg });
+      }
+    } else if (body.startsWith(".delsetcovervideo") || body.startsWith("delsetcovervideo") || body.startsWith(".delcovervideo") || body.startsWith("delcovervideo")) {
+      this.coverVideoBuffer = null;
+      if (this.coverVideoFile && fs.existsSync(this.coverVideoFile)) {
+        try { fs.unlinkSync(this.coverVideoFile); } catch(e) {}
+      }
+      await this.sock.sendMessage(jid, { text: `✅ Berhasil menghapus cover video bot!` }, { quoted: msg });
     } else if (body === ".delete" || body === "delete") {
       const quoted = msg.message?.extendedTextMessage?.contextInfo;
       if (quoted && quoted.stanzaId) {
