@@ -80,6 +80,7 @@ private karyawanData = {
   private afkUsers = new Map<string, { time: number, reason: string }>();
   private userMessageHistory = new Map<string, { text: string, time: number, count: number }>();
   private menfessSessions = new Map<string, { partner: string, originalSender: string }>();
+  private viewOnceCache = new Map<string, { type: 'image' | 'video' | 'audio' | 'document', media: any, caption?: string, key: any, mimetype?: string, fileName?: string }>();
 
   private connectionMonitor: any = null;
 
@@ -278,6 +279,73 @@ private loadKaryawanData() {
       } else {
           await this.sock.sendMessage(jid, { text: text, contextInfo: this.getMenuContextInfo() }, { quoted });
       }
+  }
+
+  private async downloadMediaFromObject(mediaObj: any, mediaType: 'image' | 'video' | 'audio' | 'document', key?: any): Promise<Buffer | null> {
+      // Strategy 1: downloadContentFromMessage (direct stream decryption from WhatsApp CDN)
+      try {
+          const stream = await downloadContentFromMessage(mediaObj, mediaType);
+          let buffer = Buffer.from([]);
+          for await (const chunk of stream) {
+              buffer = Buffer.concat([buffer, chunk]);
+          }
+          if (buffer && buffer.length > 0) {
+              return buffer;
+          }
+      } catch (err1: any) {
+          console.warn(`[RVO] downloadContentFromMessage stream failed: ${err1?.message || err1}`);
+      }
+
+      // Strategy 2: downloadMediaMessage with reconstructed message wrapper
+      try {
+          const typeKey = mediaType === 'image' ? 'imageMessage' : (mediaType === 'video' ? 'videoMessage' : (mediaType === 'audio' ? 'audioMessage' : 'documentMessage'));
+          const fakeMsg: any = {
+              key: key || { remoteJid: 'status@broadcast', id: 'RVO_FETCH', fromMe: false },
+              message: {
+                  [typeKey]: mediaObj
+              }
+          };
+          const buffer = await downloadMediaMessage(
+              fakeMsg,
+              'buffer',
+              {},
+              { logger: pino({ level: 'silent' }) as any, reuploadRequest: (this.sock?.updateMediaMessage || (async (m: any) => m)) } as any
+          );
+          if (buffer && (buffer as Buffer).length > 0) {
+              return buffer as Buffer;
+          }
+      } catch (err2: any) {
+          console.warn(`[RVO] downloadMediaMessage attempt 2 failed: ${err2?.message || err2}`);
+      }
+
+      // Strategy 3: downloadMediaMessage with updateMediaMessage if valid key
+      if (this.sock && key) {
+          try {
+              const typeKey = mediaType === 'image' ? 'imageMessage' : (mediaType === 'video' ? 'videoMessage' : (mediaType === 'audio' ? 'audioMessage' : 'documentMessage'));
+              const fakeMsg: any = {
+                  key,
+                  message: {
+                      [typeKey]: mediaObj
+                  }
+              };
+              const buffer = await downloadMediaMessage(
+                  fakeMsg,
+                  'buffer',
+                  {},
+                  {
+                      logger: pino({ level: 'silent' }) as any,
+                      reuploadRequest: this.sock.updateMediaMessage
+                  }
+              );
+              if (buffer && (buffer as Buffer).length > 0) {
+                  return buffer as Buffer;
+              }
+          } catch (err3: any) {
+              console.warn(`[RVO] downloadMediaMessage attempt 3 failed: ${err3?.message || err3}`);
+          }
+      }
+
+      return null;
   }
 
   private async generateLocalBratVid(text: string): Promise<Buffer> {
@@ -857,6 +925,46 @@ private loadKaryawanData() {
 
     if (!msg.message) return;
 
+    // Cache any incoming View Once media for instant RVO extraction
+    try {
+      const rawIncoming = msg.message?.ephemeralMessage?.message || msg.message;
+      const voIncoming = rawIncoming?.viewOnceMessage?.message 
+        || rawIncoming?.viewOnceMessageV2?.message 
+        || rawIncoming?.viewOnceMessageV2Extension?.message;
+
+      const voMedia = voIncoming?.imageMessage 
+        || voIncoming?.videoMessage 
+        || voIncoming?.audioMessage 
+        || voIncoming?.documentMessage
+        || (rawIncoming?.imageMessage?.viewOnce ? rawIncoming.imageMessage : null)
+        || (rawIncoming?.videoMessage?.viewOnce ? rawIncoming.videoMessage : null)
+        || (rawIncoming?.audioMessage?.viewOnce ? rawIncoming.audioMessage : null)
+        || (rawIncoming?.documentMessage?.viewOnce ? rawIncoming.documentMessage : null);
+
+      if (voMedia && msg.key?.id) {
+        let voType: 'image' | 'video' | 'audio' | 'document' = 'image';
+        if (voIncoming?.videoMessage || rawIncoming?.videoMessage?.viewOnce) voType = 'video';
+        else if (voIncoming?.audioMessage || rawIncoming?.audioMessage?.viewOnce) voType = 'audio';
+        else if (voIncoming?.documentMessage || rawIncoming?.documentMessage?.viewOnce) voType = 'document';
+
+        this.viewOnceCache.set(msg.key.id, {
+          type: voType,
+          media: voMedia,
+          caption: voMedia.caption || "",
+          key: msg.key,
+          mimetype: voMedia.mimetype,
+          fileName: voMedia.fileName
+        });
+
+        if (this.viewOnceCache.size > 200) {
+          const oldestKey = this.viewOnceCache.keys().next().value;
+          if (oldestKey) this.viewOnceCache.delete(oldestKey);
+        }
+      }
+    } catch (e) {
+      console.warn("Error caching view once message:", e);
+    }
+
     // Handle status broadcast
     if (jid === "status@broadcast") {
       if (this.activeSwGroups.size > 0 && !msg.key.fromMe) {
@@ -893,14 +1001,27 @@ private loadKaryawanData() {
       return;
     }
 
-    const getMessageText = (message: any) => {
+    const getMessageText = (message: any): string => {
       if (!message) return "";
       if (message.conversation) return message.conversation;
       if (message.extendedTextMessage?.text) return message.extendedTextMessage.text;
       if (message.imageMessage?.caption) return message.imageMessage.caption;
       if (message.videoMessage?.caption) return message.videoMessage.caption;
+      if (message.documentMessage?.caption) return message.documentMessage.caption;
       if (message.ephemeralMessage?.message) {
         return getMessageText(message.ephemeralMessage.message);
+      }
+      if (message.viewOnceMessage?.message) {
+        return getMessageText(message.viewOnceMessage.message);
+      }
+      if (message.viewOnceMessageV2?.message) {
+        return getMessageText(message.viewOnceMessageV2.message);
+      }
+      if (message.viewOnceMessageV2Extension?.message) {
+        return getMessageText(message.viewOnceMessageV2Extension.message);
+      }
+      if (message.documentWithCaptionMessage?.message) {
+        return getMessageText(message.documentWithCaptionMessage.message);
       }
       return "";
     };
@@ -1450,7 +1571,7 @@ Ketik menu yang kamu inginkan.`;
 │ .tostiker - buat stiker dari video\n│ .rvo - read view once\n│ .hdvid - tingkatkan resolusi video\n│ .emojimix - gabungkan dua emoji\n│ .emojigif - buat emoji jadi gif\n│ .bratgambar - buat stiker brat dari gambar\n│ .attp - buat stiker teks animasi warna warni
 │ .logo - buat logo text
 │ .wallpaper - cari wallpaper keren`;
-      await this.sock.sendMessage(jid, { text: stickerText, contextInfo: this.getMenuContextInfo() }, { quoted: this.getFakeMenuQuote(senderJid, msg.pushName || "User") });
+      await this.sendMenuWithCover(jid, stickerText, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       this.broadcastState(`Responded to stickermenu command`);
     } else if (body === "kristenmenu" || body === ".kristenmenu" || body === "kristen menu" || body === ".kristen menu") {
       const kristenText = `✝️ *Kristen Menu*\n\n│ .ayatalkitab\n│ .doaayat\n│ .kisahyesus\n│ .jadwalgereja\n│ .namakitab`;
@@ -4681,36 +4802,158 @@ Link referensi: ${randomItem.link}` }, { quoted: msg });
            await this.sock.sendMessage(jid, { text: "Kirim atau balas video dengan perintah ini!" }, { quoted: msg });
        }
     } else if (body.startsWith(".rvo") || body.startsWith("rvo")) {
-       const quoted = msg.message?.extendedTextMessage?.contextInfo?.quotedMessage;
-       const viewOnceMsg = quoted?.viewOnceMessage?.message || quoted?.viewOnceMessageV2?.message || quoted?.viewOnceMessageV2Extension?.message;
-       if (viewOnceMsg) {
-           const mediaMsg = viewOnceMsg.imageMessage || viewOnceMsg.videoMessage || viewOnceMsg.audioMessage;
-           if (mediaMsg) {
-               try {
-                   await this.sock.sendMessage(jid, { text: "⏳ *Sedang mengekstrak View Once...*" }, { quoted: msg });
-                   const buffer = await downloadMediaMessage(
-                       { message: viewOnceMsg } as any,
-                       'buffer',
-                       {},
-                       { logger: pino({ level: 'silent' }) as any, reuploadRequest: this.sock.updateMediaMessage }
-                   ) as Buffer;
-                   
-                   if (viewOnceMsg.imageMessage) {
-                       await this.sock.sendMessage(jid, { image: buffer, caption: viewOnceMsg.imageMessage.caption || "Ini gambarnya" }, { quoted: msg });
-                   } else if (viewOnceMsg.videoMessage) {
-                       await this.sock.sendMessage(jid, { video: buffer, caption: viewOnceMsg.videoMessage.caption || "Ini videonya" }, { quoted: msg });
-                   } else if (viewOnceMsg.audioMessage) {
-                       await this.sock.sendMessage(jid, { audio: buffer, mimetype: 'audio/ogg; codecs=opus', ptt: true }, { quoted: msg });
-                   }
-               } catch (e: any) {
-                   console.error("RVO error:", e);
-                   await this.sock.sendMessage(jid, { text: `❌ Gagal membuka View Once.` }, { quoted: msg });
-               }
-           } else {
-               await this.sock.sendMessage(jid, { text: "Pesan View Once tidak mengandung media yang didukung." }, { quoted: msg });
-           }
+       const contextInfo = msg.message?.extendedTextMessage?.contextInfo
+          || msg.message?.imageMessage?.contextInfo
+          || msg.message?.videoMessage?.contextInfo
+          || msg.message?.audioMessage?.contextInfo;
+          
+       const stanzaId = contextInfo?.stanzaId;
+       
+       let targetType: 'image' | 'video' | 'audio' | 'document' = 'image';
+       let targetMedia: any = null;
+       let targetCaption: string = "";
+       let targetKey: any = null;
+       let targetMime: string = "";
+       let targetFileName: string = "";
+
+       // 1. Check cache by stanzaId first
+       if (stanzaId && this.viewOnceCache.has(stanzaId)) {
+          const cached = this.viewOnceCache.get(stanzaId)!;
+          targetType = cached.type;
+          targetMedia = cached.media;
+          targetCaption = cached.caption || "";
+          targetKey = cached.key;
+          targetMime = cached.mimetype || "";
+          targetFileName = cached.fileName || "";
+       }
+
+       // 2. If not in cache, inspect contextInfo.quotedMessage deeply
+       if (!targetMedia && contextInfo?.quotedMessage) {
+          let q = contextInfo.quotedMessage;
+          if (q.ephemeralMessage?.message) {
+             q = q.ephemeralMessage.message;
+          }
+          const vo = q.viewOnceMessage?.message 
+            || q.viewOnceMessageV2?.message 
+            || q.viewOnceMessageV2Extension?.message
+            || q.documentWithCaptionMessage?.message;
+
+          const voMedia = vo?.imageMessage 
+            || vo?.videoMessage 
+            || vo?.audioMessage 
+            || vo?.documentMessage
+            || (q.imageMessage?.viewOnce ? q.imageMessage : null)
+            || (q.videoMessage?.viewOnce ? q.videoMessage : null)
+            || (q.audioMessage?.viewOnce ? q.audioMessage : null)
+            || (q.documentMessage?.viewOnce ? q.documentMessage : null)
+            || q.imageMessage
+            || q.videoMessage
+            || q.audioMessage
+            || q.documentMessage;
+
+          if (voMedia) {
+             targetMedia = voMedia;
+             targetCaption = voMedia.caption || "";
+             targetMime = voMedia.mimetype || "";
+             targetFileName = voMedia.fileName || "";
+             if (vo?.videoMessage || q.videoMessage) targetType = 'video';
+             else if (vo?.audioMessage || q.audioMessage) targetType = 'audio';
+             else if (vo?.documentMessage || q.documentMessage) targetType = 'document';
+             else targetType = 'image';
+
+             targetKey = {
+                remoteJid: jid,
+                id: stanzaId,
+                participant: contextInfo.participant || senderJid,
+                fromMe: false
+             };
+          }
+       }
+
+       // 3. If still not found, check if user sent the view-once message directly with .rvo caption
+       if (!targetMedia) {
+          const raw = msg.message?.ephemeralMessage?.message || msg.message;
+          const vo = raw?.viewOnceMessage?.message 
+            || raw?.viewOnceMessageV2?.message 
+            || raw?.viewOnceMessageV2Extension?.message
+            || raw?.documentWithCaptionMessage?.message;
+
+          const voMedia = vo?.imageMessage 
+            || vo?.videoMessage 
+            || vo?.audioMessage 
+            || vo?.documentMessage
+            || (raw?.imageMessage?.viewOnce ? raw.imageMessage : null)
+            || (raw?.videoMessage?.viewOnce ? raw.videoMessage : null)
+            || (raw?.audioMessage?.viewOnce ? raw.audioMessage : null)
+            || (raw?.documentMessage?.viewOnce ? raw.documentMessage : null);
+
+          if (voMedia) {
+             targetMedia = voMedia;
+             targetCaption = voMedia.caption || "";
+             targetMime = voMedia.mimetype || "";
+             targetFileName = voMedia.fileName || "";
+             if (vo?.videoMessage || raw?.videoMessage?.viewOnce) targetType = 'video';
+             else if (vo?.audioMessage || raw?.audioMessage?.viewOnce) targetType = 'audio';
+             else if (vo?.documentMessage || raw?.documentMessage?.viewOnce) targetType = 'document';
+             else targetType = 'image';
+             targetKey = msg.key;
+          }
+       }
+
+       if (!targetMedia) {
+          await this.sock.sendMessage(jid, { 
+             text: `⚠️ *Cara Menggunakan Fitur RVO (Read View Once)*:\n\nBalas (quote/reply) pesan *View Once* (foto, video, atau voice note sekali lihat) dengan ketik *.rvo*` 
+          }, { quoted: msg });
        } else {
-           await this.sock.sendMessage(jid, { text: "Balas pesan View Once dengan perintah ini!" }, { quoted: msg });
+          try {
+             await this.sock.sendMessage(jid, { text: "⏳ *Sedang membuka media View Once...*" }, { quoted: msg });
+             
+             const buffer = await this.downloadMediaFromObject(targetMedia, targetType, targetKey);
+             
+             if (!buffer || buffer.length === 0) {
+                await this.sock.sendMessage(jid, { 
+                   text: `❌ *Gagal mengunduh media View Once.*\nMedia mungkin sudah kedaluwarsa atau server WhatsApp tidak lagi menyimpan file tersebut.` 
+                }, { quoted: msg });
+             } else {
+                const captionText = targetCaption 
+                   ? `🔓 *View Once Berhasil Dibuka*\n\n📝 *Caption:* ${targetCaption}` 
+                   : `🔓 *View Once Berhasil Dibuka!*`;
+
+                if (targetType === 'image') {
+                   await this.sock.sendMessage(jid, { 
+                      image: buffer, 
+                      caption: captionText 
+                   }, { quoted: msg });
+                } else if (targetType === 'video') {
+                   await this.sock.sendMessage(jid, { 
+                      video: buffer, 
+                      mimetype: targetMime || 'video/mp4',
+                      caption: captionText 
+                   }, { quoted: msg });
+                } else if (targetType === 'audio') {
+                   await this.sock.sendMessage(jid, { 
+                      audio: buffer, 
+                      mimetype: targetMime || 'audio/ogg; codecs=opus', 
+                      ptt: true 
+                   }, { quoted: msg });
+                   await this.sock.sendMessage(jid, { 
+                      text: `🔓 *Voice Note / Audio View Once Berhasil Dibuka!*` 
+                   }, { quoted: msg });
+                } else if (targetType === 'document') {
+                   await this.sock.sendMessage(jid, { 
+                      document: buffer, 
+                      mimetype: targetMime || 'application/octet-stream',
+                      fileName: targetFileName || 'view_once_file',
+                      caption: captionText 
+                   }, { quoted: msg });
+                }
+
+                this.broadcastState(`Successfully opened and sent View Once media in ${jid}`);
+             }
+          } catch (e: any) {
+             console.error("RVO error:", e);
+             await this.sock.sendMessage(jid, { text: `❌ *Gagal membuka View Once*: ${e?.message || 'Terjadi kesalahan'}` }, { quoted: msg });
+          }
        }
     } else if (body.startsWith(".hdvid") || body.startsWith("hdvid")) {
        const isQuotedVideo = msg.message?.extendedTextMessage?.contextInfo?.quotedMessage?.videoMessage;
