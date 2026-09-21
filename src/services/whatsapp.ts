@@ -5,6 +5,7 @@ import {
   fetchLatestBaileysVersion,
   downloadMediaMessage,
   downloadContentFromMessage,
+  generateWAMessage,
   generateWAMessageFromContent,
   generateWAMessageContent,
   proto,
@@ -1475,30 +1476,30 @@ Ketik menu yang kamu inginkan.`;
     
     } else if (body === "fakecallmenu" || body === ".fakecallmenu" || body === "fakecall menu" || body === ".fakecall menu") {
       const fakecallText = `📱 *Fake Call Menu*\n\n│ .fakecallandroid teks | durasi\n│ .fakecalliphone teks | durasi\n│ .fakevidcalliphone teks | durasi\n\nContoh:\n.fakecallandroid Sayang | 05:20\n\nCatatan: Reply gambar untuk dijadikan foto profil.`;
-      await this.sock.sendMessage(jid, { text: fakecallText, contextInfo: this.getMenuContextInfo() }, { quoted: this.getFakeMenuQuote(senderJid, msg.pushName || "User") });
+      await this.sendMenuWithCover(jid, fakecallText, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
     } else if (body === "iqcmenu" || body === ".iqcmenu" || body === "iqc menu" || body === ".iqc menu") {
       const iqcText = `💬 *IQC Menu*\n\n│ .iqc teks\n│ .iqcpink teks\n│ .iqcmerah teks\n│ .iqcbiru teks\n│ .iqckuning teks\n\nContoh:\n.iqcpink Halo semuanya`;
-      await this.sock.sendMessage(jid, { text: iqcText, contextInfo: this.getMenuContextInfo() }, { quoted: this.getFakeMenuQuote(senderJid, msg.pushName || "User") });
+      await this.sendMenuWithCover(jid, iqcText, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       this.broadcastState(`Responded to iqcmenu command`);
-} else if (body === "storemenu" || body === ".storemenu" || body === "store menu" || body === ".store menu") {
+    } else if (body === "storemenu" || body === ".storemenu" || body === "store menu" || body === ".store menu") {
       const storeText = `🛒 *Store Menu*\n\n│ .list\n│ .addlist\n│ .dellist\n│ .update\n│ .jeda\n│ .tambah\n│ .kurang\n│ .kali\n│ .delsetdone\n│ .changedone\n│ .setdone\n│ .delproses\n│ .changeproses\n│ .setproses\n│ .proses\n│ .done`;
-      await this.sock.sendMessage(jid, { text: storeText, contextInfo: this.getMenuContextInfo() }, { quoted: this.getFakeMenuQuote(senderJid, msg.pushName || "User") });
+      await this.sendMenuWithCover(jid, storeText, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       this.broadcastState(`Responded to storemenu command`);
     } else if (body === "beritamenu" || body === ".beritamenu" || body === "berita menu" || body === ".berita menu") {
       const beritaText = `📰 *Berita Menu*\n\n│ .beritabola\n│ .fajar\n│ .cnn\n│ .layarkaca\n│ .cnbctribun\n│ .indozone\n│ .kompas\n│ .detiknews\n│ .dailynews\n│ .inews\n│ .okezone\n│ .sindo\n│ .tempo\n│ .antara\n│ .kontan\n│ .merdeka\n│ .jalantikus\n│ .beritasatu\n│ .liputan6\n│ .batampos\n│ .infoloker`;
-      await this.sock.sendMessage(jid, { text: beritaText, contextInfo: this.getMenuContextInfo() }, { quoted: this.getFakeMenuQuote(senderJid, msg.pushName || "User") });
+      await this.sendMenuWithCover(jid, beritaText, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       this.broadcastState(`Responded to beritamenu command`);
     } else if (body === "sulapmenu" || body === ".sulapmenu" || body === "sulap menu" || body === ".sulap menu") {
       const sulapText = `🎩 *Sulap Menu*\n\n│ .kartusulap\n│ .tongkatsulap\n│ .topisulap\n│ .koinsulap\n│ .thumbtip\n│ .cangkirdanbola\n│ .linkingrings\n│ .spongeballs\n│ .silkscarf\n│ .appearingcane\n│ .vanishingcane\n│ .changebag\n│ .dovepan\n│ .floatingtable\n│ .levitationdevice\n│ .kotakpedang\n│ .guillotinesulap\n│ .zigzagbox\n│ .kotaktembus\n│ .firewallet`;
-      await this.sock.sendMessage(jid, { text: sulapText, contextInfo: this.getMenuContextInfo() }, { quoted: this.getFakeMenuQuote(senderJid, msg.pushName || "User") });
+      await this.sendMenuWithCover(jid, sulapText, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       this.broadcastState(`Responded to sulapmenu command`);
     } else if (body === "tiketmenu" || body === ".tiketmenu" || body === "tiket menu" || body === ".tiket menu") {
       const tiketText = `🎟️ *Tiket Menu*\n\n│ .ticket\n│ .konser\n│ .event\n│ .jadwal\n│ .harga\n│ .kategori\n│ .seatmap\n│ .stoktiket\n│ .bookingtiket\n│ .riwayat`;
-      await this.sock.sendMessage(jid, { text: tiketText, contextInfo: this.getMenuContextInfo() }, { quoted: this.getFakeMenuQuote(senderJid, msg.pushName || "User") });
+      await this.sendMenuWithCover(jid, tiketText, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       this.broadcastState(`Responded to tiketmenu command`);
     } else if (body === "karyawanmenu" || body === ".karyawanmenu" || body === "karyawan menu" || body === ".karyawan menu") {
       const karyawanText = `🧑‍💼 *Karyawan Menu*\n\n│ .addproduk\n│ .delproduk\n│ .listproduk\n│ .cekproduk\n│ .addstok\n│ .cekstok\n│ .updatestok\n│ .restock\n│ .penjualan\n│ .riwayatjual\n│ .laporan\n│ .konfirmasi\n│ .hargaproduk\n│ .strukpembayaran`;
-      await this.sock.sendMessage(jid, { text: karyawanText, contextInfo: this.getMenuContextInfo() }, { quoted: this.getFakeMenuQuote(senderJid, msg.pushName || "User") });
+      await this.sendMenuWithCover(jid, karyawanText, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       this.broadcastState(`Responded to karyawanmenu command`);
     } else if (body === "groupmenu" || body === ".groupmenu" || body === "group menu" || body === ".group menu") {
       const groupText = `👥 *Group Menu*
@@ -1555,7 +1556,7 @@ Ketik menu yang kamu inginkan.`;
 │ .listwarn - lihat daftar peringatan di grup (admin only)
 │ .delwarn - hapus peringatan (admin only)
 │ .infowarn - info peringatan saya/seseorang`;
-      await this.sock.sendMessage(jid, { text: groupText, contextInfo: this.getMenuContextInfo() }, { quoted: this.getFakeMenuQuote(senderJid, msg.pushName || "User") });
+      await this.sendMenuWithCover(jid, groupText, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       this.broadcastState(`Responded to groupmenu command`);
     } else if (body === "downloadmenu" || body === ".downloadmenu" || body === "download menu" || body === ".download menu") {
       const downloadText = `📥 *Download Menu*\n\n│ .tiktok - download video dari link tiktok VT\n│ .tiktokaudiomp3 - download audio dari tiktok\n│ .playyt - mencari dan mendownload audio Youtube\n│ .playytmp4 - mencari dan mendownload video Youtube\n│ .capcut - download template capcut\n│ .facebook - download video/reels facebook\n│ .instagram - download reels instagram\n│ .fotoanime - ambil foto anime random\n│ .fotosexy - ambil foto random\n│ .pinterest - download foto pinterest\n│ .ttsaudio - text to speech audio\n│ .tiktokslide - download tiktok slide\n│ .ssweb - screenshot web\n│ .gdrive - download google drive\n│ .mediafire - download mediafire
@@ -1564,7 +1565,7 @@ Ketik menu yang kamu inginkan.`;
 │ .vidsexyindonesia - download video sexy bikini indonesia
 │ .vidsexymalaysia - download video sexy bikini malaysia
 │ .vidsexychina - download video sexy bikini china`;
-      await this.sock.sendMessage(jid, { text: downloadText, contextInfo: this.getMenuContextInfo() }, { quoted: this.getFakeMenuQuote(senderJid, msg.pushName || "User") });
+      await this.sendMenuWithCover(jid, downloadText, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       this.broadcastState(`Responded to downloadmenu command`);
     } else if (body === "stickermenu" || body === ".stickermenu" || body === "sticker menu" || body === ".sticker menu") {
       const stickerText = `🎨 *Sticker Menu*\n\n│ .stiker - ubah gambar jadi stiker\n│ .hd - tingkatkan resolusi gambar\n│ .brat - buat stiker teks brat\n│ .bratvid - buat stiker teks video brat\n│ .smeme - buat stiker dengan teks|teks\n│ .qc - buat stiker text chat\n│ .toimg - stiker ke gambar\n│ .togif - gambar ke gif\n│ .tovideo - ubah stiker ke video
@@ -1575,27 +1576,27 @@ Ketik menu yang kamu inginkan.`;
       this.broadcastState(`Responded to stickermenu command`);
     } else if (body === "kristenmenu" || body === ".kristenmenu" || body === "kristen menu" || body === ".kristen menu") {
       const kristenText = `✝️ *Kristen Menu*\n\n│ .ayatalkitab\n│ .doaayat\n│ .kisahyesus\n│ .jadwalgereja\n│ .namakitab`;
-      await this.sock.sendMessage(jid, { text: kristenText, contextInfo: this.getMenuContextInfo() }, { quoted: this.getFakeMenuQuote(senderJid, msg.pushName || "User") });
+      await this.sendMenuWithCover(jid, kristenText, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       this.broadcastState(`Responded to kristenmenu command`);
     } else if (body === "islammenu" || body === ".islammenu" || body === "islam menu" || body === ".islam menu") {
       const islamText = `☪️ *Islam Menu*\n\n│ .ayatkursi\n│ .tekssholat\n│ .hadits\n│ .jadwalsholat\n│ .kisahnabi\n│ .niatsholat\n│ .quotesislami`;
-      await this.sock.sendMessage(jid, { text: islamText, contextInfo: this.getMenuContextInfo() }, { quoted: this.getFakeMenuQuote(senderJid, msg.pushName || "User") });
+      await this.sendMenuWithCover(jid, islamText, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       this.broadcastState(`Responded to islammenu command`);
     } else if (body === "funmenu" || body === ".funmenu" || body === "fun menu" || body === ".fun menu") {
       const funText = `🤡 *Fun Menu*\n\n│ .cekkhodam\n│ .cekganteng\n│ .cekcantik\n│ .cekjodoh\n│ .ceklesby\n│ .cekpasangan\n│ .cekgay\n│ .cekhoby\n│ .cekkesetiaan\n│ .jadian\n│ .kiss\n│ .quotes\n│ .avatar\n│ .ppcouple\n│ .ceksifat\n│ .cekkenakalan\n│ .cekperawan\n│ .cekperjaka\n│ .cekjanda\n│ .cekduda\n│ .bego\n│ .rate\n│ .top\n│ .infonegara\n│ .cekwibu\n│ .meme\n│ .waifu\n│ .ceksange\n│ .cekkaya\n│ .cekbucin\n│ .artinama\n│ .cekmasadepan\n│ .faktadunia\n│ .cekgempa\n│ .cekcuaca`;
-      await this.sock.sendMessage(jid, { text: funText, contextInfo: this.getMenuContextInfo() }, { quoted: this.getFakeMenuQuote(senderJid, msg.pushName || "User") });
+      await this.sendMenuWithCover(jid, funText, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       this.broadcastState(`Responded to funmenu command`);
     } else if (body === "cecanmenu" || body === ".cecanmenu" || body === "cecan menu" || body === ".cecan menu") {
       const cecanText = `👩 *Cecan Menu*\n\n│ .cecanchina\n│ .cecanhijab\n│ .cecanindonesia\n│ .cecanjapan\n│ .cecanjeni\n│ .cecanjiso\n│ .cecankorea\n│ .cecanmalaysia\n│ .cecanjustinaxie\n│ .cecanrose\n│ .cecanthailand\n│ .cecanvietnam`;
-      await this.sock.sendMessage(jid, { text: cecanText, contextInfo: this.getMenuContextInfo() }, { quoted: this.getFakeMenuQuote(senderJid, msg.pushName || "User") });
+      await this.sendMenuWithCover(jid, cecanText, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       this.broadcastState(`Responded to cecanmenu command`);
     } else if (body === "animemenu" || body === ".animemenu" || body === "anime menu" || body === ".anime menu") {
       const animeText = `🦊 *Anime Menu*\n\n│ .animeakira\n│ .animeasuna\n│ .animeeba\n│ .animeelaina\n│ .animeemilia\n│ .animegremory\n│ .animehinata\n│ .animehusbu\n│ .animeisuzu\n│ .animeitori\n│ .animekagura\n│ .animekanna\n│ .animemiku\n│ .animenezuko\n│ .animeloli\n│ .animepokemon\n│ .animerem\n│ .animeryuko\n│ .animeshina\n│ .animeshinka\n│ .animeshota\n│ .animetejina\n│ .animetoukachan`;
-      await this.sock.sendMessage(jid, { text: animeText, contextInfo: this.getMenuContextInfo() }, { quoted: this.getFakeMenuQuote(senderJid, msg.pushName || "User") });
+      await this.sendMenuWithCover(jid, animeText, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       this.broadcastState(`Responded to animemenu command`);
     } else if (body === "sertifikatmenu" || body === ".sertifikatmenu" || body === "sertifikat menu" || body === ".sertifikat menu") {
       const sertifikatText = `🎓 *Sertifikat Menu*\n\n│ .stkbaik\n│ .stkcantik\n│ .stkganteng\n│ .stkhitam\n│ .stkmiskin\n│ .stkkaya\n│ .stkmarah\n│ .stksabar\n│ .stksakit\n│ .stkkeren\n│ .stkmisterius\n│ .stksntai\n\n│ .stksombong\n│ .stklucu\n│ .stkgila\n│ .stkstress\n\n*Gunakan dengan nama, contoh: .stkbaik Agus*`;
-      await this.sock.sendMessage(jid, { text: sertifikatText, contextInfo: this.getMenuContextInfo() }, { quoted: this.getFakeMenuQuote(senderJid, msg.pushName || "User") });
+      await this.sendMenuWithCover(jid, sertifikatText, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       this.broadcastState(`Responded to sertifikatmenu command`);
     } else if (/^\.?stk(baik|cantik|ganteng|hitam|miskin|kaya|marah|sabar|sakit|keren|misterius|sntai|sombong|lucu|gila|stress)/i.test(body)) {
       const match = body.match(/^\.?stk(baik|cantik|ganteng|hitam|miskin|kaya|marah|sabar|sakit|keren|misterius|sntai|sombong|lucu|gila|stress)/i);
@@ -1640,23 +1641,23 @@ Ketik menu yang kamu inginkan.`;
       }
     } else if (body === "rpgmenu" || body === ".rpgmenu" || body === "rpg menu" || body === ".rpg menu") {
       const rpgText = `⚔️ *RPG Menu*\n\n│ .kerja\n│ .fightnaga\n│ .fightkucing\n│ .fightphonix\n│ .mancing\n│ .fightkyubi\n│ .berdagang\n│ .nabung\n│ .mining\n│ .bankcek\n│ .maling\n│ .banknabung\n│ .banktarik\n│ .berkebun\n│ .mulung\n│ .bonus\n│ .gajian\n│ .nebang\n│ .petualang\n│ .upgrade\n│ .transfer\n│ .collect\n│ .referal\n│ .shop\n│ .ojek\n│ .nguli\n│ .casino\n│ .pasar\n│ .berburu\n│ .polisi`;
-      await this.sock.sendMessage(jid, { text: rpgText, contextInfo: this.getMenuContextInfo() }, { quoted: this.getFakeMenuQuote(senderJid, msg.pushName || "User") });
+      await this.sendMenuWithCover(jid, rpgText, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       this.broadcastState(`Responded to rpgmenu command`);
     } else if (body === "primbonmenu" || body === ".primbonmenu" || body === "primbon menu" || body === ".primbon menu") {
       const primbonText = `🔮 *Primbon Menu*\n\n│ .pantun\n│ .ceksial\n│ .ramalannasib\n│ .ramalanjodoh\n│ .ramalancinta\n│ .ramalankeburukan\n│ .zodiak\n│ .isidompet\n│ .profesiku\n│ .nulis`;
-      await this.sock.sendMessage(jid, { text: primbonText, contextInfo: this.getMenuContextInfo() }, { quoted: this.getFakeMenuQuote(senderJid, msg.pushName || "User") });
+      await this.sendMenuWithCover(jid, primbonText, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       this.broadcastState(`Responded to primbonmenu command`);
     } else if (body === "margamenu" || body === ".margamenu" || body === "marga menu" || body === ".marga menu") {
       const margaText = `👥 *Marga Menu*\n\n│ .cekpariban - masukan marga/boru target agar tau marga/boru dia marpariban atau tidak menurut adat batak\n│ .cektartulang - masukan marga/boru target agar tau marga/boru dia martartulang atau tidak menurut adat batak\n│ .cektarito - masukan marga/boru target agar tau marga/boru dia martarito atau tidak menurut adat batak\n│ .cekpadan - masukan marga/boru target agar tau marga/boru dia marpadan atau tidak menurut adat batak`;
-      await this.sock.sendMessage(jid, { text: margaText, contextInfo: this.getMenuContextInfo() }, { quoted: this.getFakeMenuQuote(senderJid, msg.pushName || "User") });
+      await this.sendMenuWithCover(jid, margaText, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       this.broadcastState(`Responded to margamenu command`);
     } else if (body === "videomenu" || body === ".videomenu" || body === "video menu" || body === ".video menu") {
       const videoText = `🎬 *Video Menu*\n\n│ .tiktokgirl\n│ .tiktoktobrut\n│ .tiktokkayes\n│ .tiktokhot\n│ .tiktokghea\n│ .tiktokbocil\n│ .tiktoklesbi\n│ .tiktokgay\n│ .tiktokartis\n│ .tiktokpacaran\n│ .tiktokanjing\n│ .tiktokkucing\n│ .tiktokfreefire\n│ .tiktokpubg\n│ .tiktoknikah\n│ .tiktokpointblank`;
-      await this.sock.sendMessage(jid, { text: videoText, contextInfo: this.getMenuContextInfo() }, { quoted: this.getFakeMenuQuote(senderJid, msg.pushName || "User") });
+      await this.sendMenuWithCover(jid, videoText, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       this.broadcastState(`Responded to videomenu command`);
     } else if (body === "gamemenu" || body === ".gamemenu" || body === "game menu" || body === ".game menu") {
       const gameText = `🎮 *Game Menu*\n\n| .tebakgambar\n| .susunkata\n| .math\n| .tebakkata\n| .tebakbendera\n| .asahotak\n| .tebaklirik\n| .tekateki\n| .tebakangka\n| .kuis\n| .tebakkota\n| .family100\n| .tebakusia\n| .tebakkimia\n| .tebakbuah\n| .werewolf\n| .tebakuang\n| .tebaksurah\n| .tebakhewan\n| .tebakbaju\n| .tebakcelana\n| .tebakmakanan\n| .tebakjkt48\n| .togel\n| .stoptogel\n| .truthordare\n| .ulartangga`;
-      await this.sock.sendMessage(jid, { text: gameText, contextInfo: this.getMenuContextInfo() }, { quoted: this.getFakeMenuQuote(senderJid, msg.pushName || "User") });
+      await this.sendMenuWithCover(jid, gameText, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
       this.broadcastState(`Responded to gamemenu command`);
     } else if (body === "ownermenu" || body === ".ownermenu" || body === "owner menu" || body === ".owner menu") {
       if (!isOwner) return await this.sock.sendMessage(jid, { text: `👑 *Akses Ditolak*
@@ -2965,11 +2966,77 @@ Pesan pribadi kembali diizinkan.` }, { quoted: msg });
             };
           }
 
-          await this.sock.sendMessage("status@broadcast", messageContent, {
-            statusJidList: uniqueJidList,
-            backgroundColor: randomBg,
-            font: randomFont
-          } as any);
+          // Generate message payload targeted to the group and upload media
+          const fullMsg = await generateWAMessage(targetGid, messageContent, {
+            upload: this.sock.waUploadToServer,
+            userJid: this.sock.user?.id || ""
+          });
+
+          const innerMessage: any = { ...fullMsg.message };
+          let mediaTypeStr = '';
+          if (innerMessage.imageMessage) {
+            mediaTypeStr = 'image';
+            innerMessage.imageMessage = {
+              ...innerMessage.imageMessage,
+              contextInfo: {
+                ...(innerMessage.imageMessage.contextInfo || {}),
+                isGroupStatus: true
+              }
+            };
+          } else if (innerMessage.videoMessage) {
+            mediaTypeStr = 'video';
+            innerMessage.videoMessage = {
+              ...innerMessage.videoMessage,
+              contextInfo: {
+                ...(innerMessage.videoMessage.contextInfo || {}),
+                isGroupStatus: true
+              }
+            };
+          } else if (innerMessage.audioMessage) {
+            mediaTypeStr = 'audio';
+            innerMessage.audioMessage = {
+              ...innerMessage.audioMessage,
+              contextInfo: {
+                ...(innerMessage.audioMessage.contextInfo || {}),
+                isGroupStatus: true
+              }
+            };
+          } else if (innerMessage.extendedTextMessage) {
+            innerMessage.extendedTextMessage = {
+              ...innerMessage.extendedTextMessage,
+              backgroundArgb: 0xff1e293b,
+              font: proto.Message.ExtendedTextMessage.FontType.SYSTEM_BOLD,
+              contextInfo: {
+                ...(innerMessage.extendedTextMessage.contextInfo || {}),
+                isGroupStatus: true
+              }
+            };
+          } else if (innerMessage.conversation) {
+            innerMessage.extendedTextMessage = {
+              text: innerMessage.conversation,
+              backgroundArgb: 0xff1e293b,
+              font: proto.Message.ExtendedTextMessage.FontType.SYSTEM_BOLD,
+              contextInfo: {
+                isGroupStatus: true
+              }
+            };
+            delete innerMessage.conversation;
+          }
+
+          const finalStatusMessage: any = {
+            groupStatusMessageV2: {
+              message: innerMessage
+            },
+            groupStatusMessage: {
+              message: innerMessage
+            }
+          };
+
+          // Relay directly to group JID (targetGid)
+          await this.sock.relayMessage(targetGid, finalStatusMessage, {
+            messageId: fullMsg.key.id,
+            additionalAttributes: mediaTypeStr ? { mediatype: mediaTypeStr } : undefined
+          });
 
           successCount++;
           groupNames.push(gSubject);
