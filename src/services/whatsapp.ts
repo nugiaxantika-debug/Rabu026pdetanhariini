@@ -5,11 +5,13 @@ import {
   fetchLatestBaileysVersion,
   downloadMediaMessage,
   downloadContentFromMessage,
+  generateWAMessage,
   generateWAMessageFromContent,
   generateWAMessageContent,
   proto,
   Browsers
 } from "@whiskeysockets/baileys";
+import { randomBytes } from "crypto";
 import { Boom } from "@hapi/boom";
 import pino from "pino";
 import FormData from "form-data";
@@ -262,11 +264,89 @@ private loadKaryawanData() {
 
   private async sendMenuWithCover(jid: string, text: string, quoted: any) {
       if (this.coverImageBuffer && this.coverVideoBuffer) {
-          await this.sock.sendMessage(jid, { image: this.coverImageBuffer, contextInfo: this.getMenuContextInfo() }, { quoted });
           try {
-              await this.sock.sendMessage(jid, { video: this.coverVideoBuffer, caption: text, mimetype: "video/mp4", gifPlayback: true, contextInfo: this.getMenuContextInfo() }, { quoted });
-          } catch {
-              await this.sock.sendMessage(jid, { video: this.coverVideoBuffer, caption: text, mimetype: "video/mp4", contextInfo: this.getMenuContextInfo() }, { quoted });
+              // WhatsApp native Album Message container expecting 1 image and 1 video (combined 2 thumbnails)
+              const albumMsg = generateWAMessageFromContent(jid, {
+                  albumMessage: {
+                      expectedImageCount: 1,
+                      expectedVideoCount: 1,
+                      contextInfo: this.getMenuContextInfo()
+                  }
+              }, {
+                  userJid: this.sock?.user?.id || "",
+                  quoted
+              });
+
+              // 1. Relay the parent album message container
+              await this.sock.relayMessage(jid, albumMsg.message!, { messageId: albumMsg.key.id });
+
+              // 2. Generate child Image Message associated with the album
+              const imageMsg = await generateWAMessage(jid, {
+                  image: this.coverImageBuffer,
+                  contextInfo: this.getMenuContextInfo()
+              }, {
+                  userJid: this.sock?.user?.id || "",
+                  upload: this.sock.waUploadToServer
+              });
+
+              if (imageMsg?.message) {
+                  imageMsg.message.messageContextInfo = {
+                      ...(imageMsg.message.messageContextInfo || {}),
+                      messageSecret: randomBytes(32),
+                      messageAssociation: {
+                          associationType: proto.MessageAssociation.AssociationType.MEDIA_ALBUM,
+                          parentMessageKey: albumMsg.key
+                      }
+                  };
+              }
+
+              // 3. Generate child Video Message associated with the album with menu text caption
+              const videoMsg = await generateWAMessage(jid, {
+                  video: this.coverVideoBuffer,
+                  caption: text,
+                  mimetype: "video/mp4",
+                  contextInfo: this.getMenuContextInfo()
+              }, {
+                  userJid: this.sock?.user?.id || "",
+                  upload: this.sock.waUploadToServer
+              });
+
+              if (videoMsg?.message) {
+                  videoMsg.message.messageContextInfo = {
+                      ...(videoMsg.message.messageContextInfo || {}),
+                      messageSecret: randomBytes(32),
+                      messageAssociation: {
+                          associationType: proto.MessageAssociation.AssociationType.MEDIA_ALBUM,
+                          parentMessageKey: albumMsg.key
+                      }
+                  };
+              }
+
+              // 4. Relay both media messages so WhatsApp groups them into 2 thumbnails in one bubble
+              await new Promise(r => setTimeout(r, 200));
+              if (imageMsg?.message) {
+                  await this.sock.relayMessage(jid, imageMsg.message, { messageId: imageMsg.key.id });
+              }
+              await new Promise(r => setTimeout(r, 200));
+              if (videoMsg?.message) {
+                  await this.sock.relayMessage(jid, videoMsg.message, { messageId: videoMsg.key.id });
+              }
+              return;
+          } catch (albumErr: any) {
+              console.error("[sendMenuWithCover] Album relay failed, using fallback:", albumErr);
+              try {
+                  await this.sock.sendMessage(jid, {
+                      video: this.coverVideoBuffer,
+                      caption: text,
+                      mimetype: "video/mp4",
+                      jpegThumbnail: this.coverImageBuffer,
+                      contextInfo: this.getMenuContextInfo()
+                  }, { quoted });
+                  return;
+              } catch {
+                  await this.sock.sendMessage(jid, { image: this.coverImageBuffer, caption: text, contextInfo: this.getMenuContextInfo() }, { quoted });
+                  return;
+              }
           }
       } else if (this.coverVideoBuffer) {
           try {
@@ -3249,7 +3329,7 @@ Contoh: .delowner 628xxx` }, { quoted: msg });
            if (this.coverVideoFile) {
              try { fs.writeFileSync(this.coverVideoFile, buffer); } catch(e) {}
            }
-           await this.sock.sendMessage(jid, { text: `✅ Berhasil mengatur cover video bot!\nThumbnail video mp4 akan muncul di bawah coverbot di bot.` }, { quoted: msg });
+           await this.sock.sendMessage(jid, { text: `✅ Berhasil mengatur cover video bot!\nCover video akan disatukan dengan coverbot menjadi 2 thumbnail bersamaan saat menampilkan menu.` }, { quoted: msg });
         } catch (e: any) {
            await this.sock.sendMessage(jid, { text: `❌ Gagal memproses video: ${e.message || e}` }, { quoted: msg });
         }
