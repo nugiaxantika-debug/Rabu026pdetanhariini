@@ -5,7 +5,6 @@ import {
   fetchLatestBaileysVersion,
   downloadMediaMessage,
   downloadContentFromMessage,
-  generateWAMessage,
   generateWAMessageFromContent,
   generateWAMessageContent,
   proto,
@@ -1244,7 +1243,7 @@ private loadKaryawanData() {
     }
     
     const requestedCmd = body.split(/[\s\n]+/)[0];
-    const ownerCommands = ['.addtextnama', 'addtextnama', '.deltextnama', 'deltextnama', '.ownermenu', 'ownermenu', '.antibot', 'antibot', '.autoread', 'autoread', '.savekontak', 'savekontak', '.broadcast', 'broadcast', '.restartbot', 'restartbot', '.addpremium', 'addpremium', '.addprem', 'addprem', '.addowner', 'addowner', '.delowner', 'delowner', '.listowner', 'listowner', '.listpremium', 'listpremium', '.delpremium', 'delpremium', '.setbotpp', 'setbotpp', '.setbotname', 'setbotname', '.addnamabot', 'addnamabot', '.delnamabot', 'delnamabot', '.totalfitur', 'totalfitur', '.addprefix', 'addprefix', '.delprefix', 'delprefix', '.listprefix', 'listprefix', '.addpoweredby', 'addpoweredby', '.delpoweredby', 'delpoweredby', '.listpoweredby', 'listpoweredby', '.linkset', 'linkset', '.dellinkset', 'dellinkset', '.addcmd', 'addcmd', '.delcmd', 'delcmd', '.listcmd', 'listcmd', '.self', 'self', '.publik', 'publik', '.setcoverbot', 'setcoverbot', '.delcoverbot', 'delcoverbot', '.setcovervideo', 'setcovervideo', '.delsetcovervideo', 'delsetcovervideo', '.delcovervideo', 'delcovervideo', '.anticall', 'anticall', '.autotyping', 'autotyping', '.addsewa', 'addsewa', '.delsewa', 'delsewa', '.listsewa', 'listsewa', '.joingc', 'joingc', '.creategc', 'creategc', '.addsticker', 'addsticker', '.delsticker', 'delsticker', '.addlimit', 'addlimit', '.dellimit', 'dellimit', '.listlimit', 'listlimit', '.autoblockprivate', 'autoblockprivate', '.delautoblockprivate', 'delautoblockprivate', '.upswgroup', 'upswgroup'];
+    const ownerCommands = ['.addtextnama', 'addtextnama', '.deltextnama', 'deltextnama', '.ownermenu', 'ownermenu', '.antibot', 'antibot', '.autoread', 'autoread', '.savekontak', 'savekontak', '.broadcast', 'broadcast', '.restartbot', 'restartbot', '.addpremium', 'addpremium', '.addprem', 'addprem', '.addowner', 'addowner', '.delowner', 'delowner', '.listowner', 'listowner', '.listpremium', 'listpremium', '.delpremium', 'delpremium', '.setbotpp', 'setbotpp', '.setbotname', 'setbotname', '.addnamabot', 'addnamabot', '.delnamabot', 'delnamabot', '.totalfitur', 'totalfitur', '.addprefix', 'addprefix', '.delprefix', 'delprefix', '.listprefix', 'listprefix', '.addpoweredby', 'addpoweredby', '.delpoweredby', 'delpoweredby', '.listpoweredby', 'listpoweredby', '.linkset', 'linkset', '.dellinkset', 'dellinkset', '.addcmd', 'addcmd', '.delcmd', 'delcmd', '.listcmd', 'listcmd', '.self', 'self', '.publik', 'publik', '.setcoverbot', 'setcoverbot', '.delcoverbot', 'delcoverbot', '.setcovervideo', 'setcovervideo', '.delsetcovervideo', 'delsetcovervideo', '.delcovervideo', 'delcovervideo', '.anticall', 'anticall', '.autotyping', 'autotyping', '.addsewa', 'addsewa', '.delsewa', 'delsewa', '.listsewa', 'listsewa', '.joingc', 'joingc', '.creategc', 'creategc', '.addsticker', 'addsticker', '.delsticker', 'delsticker', '.addlimit', 'addlimit', '.dellimit', 'dellimit', '.listlimit', 'listlimit', '.autoblockprivate', 'autoblockprivate', '.delautoblockprivate', 'delautoblockprivate'];
     const groupCommands = ['.afk', 'afk', '.joinch', 'joinch', '.cekidgc', 'cekidgc', '.infouser', 'infouser', '.tagadmin', 'tagadmin', '.infogrup', 'infogrup', '.leaderboard', 'leaderboard', '.totalchat', 'totalchat', '.groupmenu', 'groupmenu', '.delete', 'delete', '.hidetag', 'hidetag', '.kick', 'kick', '.add', 'add', '.open', 'open', '.close', 'close', '.open2', 'open2', '.close2', 'close2', '.antilinkall', 'antilinkall', '.linkgc', 'linkgc', '.setppgc', 'setppgc', '.delppgc', 'delppgc', '.setwelcome', 'setwelcome', '.setbye', 'setbye', '.welcome', 'welcome', '.goodbye', 'goodbye', '.antitagsw', 'antitagsw', '.antivideo', 'antivideo', '.antifoto', 'antifoto', '.antifoto1x', 'antifoto1x', '.antistiker', 'antistiker', '.antispam', 'antispam', '.setnamegc', 'setnamegc', '.setdescgc', 'setdescgc', '.culikswgc', 'culikswgc', '.culikprofilegc', 'culikprofilegc', '.kickall', 'kickall', '.sewabot', 'sewabot', '.promote', 'promote', '.demote', 'demote', '.werewolf', 'werewolf', '.joinww', 'joinww', '.startww', 'startww', '.mutegc', 'mutegc', '.resetlink', 'resetlink', '.tagall', 'tagall', '.setbotbio', 'setbotbio', '.delbotbio', 'delbotbio', '.antivirtex', 'antivirtex', '.antitoxic', 'antitoxic', '.menfess', 'menfess', '.confess', 'confess', '.balasmenfess', 'balasmenfess', '.tolakmenfess', 'tolakmenfess', '.stopmenfess', 'stopmenfess', '.warn', 'warn', '.listwarn', 'listwarn', '.delwarn', 'delwarn', '.infowarn', 'infowarn'];
     const funCommands = ['.ceksifat', 'ceksifat', '.cekkenakalan', 'cekkenakalan', '.cekperawan', 'cekperawan', '.cekperjaka', 'cekperjaka', '.cekjanda', 'cekjanda', '.cekduda', 'cekduda', '.bego', 'bego', '.rate', 'rate', '.top', 'top', '.funmenu', 'funmenu', '.cekkhodam', 'cekkhodam', '.cekganteng', 'cekganteng', '.cekcantik', 'cekcantik', '.cekjodoh', 'cekjodoh', '.ceklesby', 'ceklesby', '.cekpasangan', 'cekpasangan', '.cekgay', 'cekgay', '.cekhoby', 'cekhoby', '.cekkesetiaan', 'cekkesetiaan', '.jadian', 'jadian', '.kiss', 'kiss', '.quotes', 'quotes', '.avatar', 'avatar', '.ppcouple', 'ppcouple', '.infonegara', 'infonegara', '.cekwibu', 'cekwibu', '.meme', 'meme', '.waifu', 'waifu', '.ceksange', 'ceksange', '.cekkaya', 'cekkaya', '.cekbucin', 'cekbucin', '.artinama', 'artinama', '.cekmasadepan', 'cekmasadepan', '.faktadunia', 'faktadunia', '.cekgempa', 'cekgempa', '.cekcuaca', 'cekcuaca'];
     const margaCommands = ['.margamenu', 'margamenu', '.cekpariban', 'cekpariban', '.cektartulang', 'cektartulang', '.cektarito', 'cektarito', '.cekpadan', 'cekpadan'];
@@ -1707,7 +1706,6 @@ Perintah ini hanya bisa digunakan oleh Owner!` }, { quoted: msg });
 │ .creategc - buat grup baru
 │ .addsticker - tambah stiker
 │ .delsticker - hapus stiker
-│ .upswgroup - upload status foto/video/teks ke profil grup tanpa admin
 │ .totalfitur`;
       
       await this.sendMenuWithCover(jid, ownerText, this.getFakeMenuQuote(senderJid, msg.pushName || "User"));
@@ -2827,242 +2825,6 @@ Pesan pribadi kembali diizinkan.` }, { quoted: msg });
           await this.sock.sendMessage(jid, { text: `📢 *Broadcast Terkirim*\nBerhasil mengirim broadcast ke seluruh user! (Simulasi)` }, { quoted: msg });
       }
       this.broadcastState(`Responded to broadcast command`);
-    } else if (body.startsWith(".upswgroup") || body.startsWith("upswgroup")) {
-      if (!isOwner) return await this.sock.sendMessage(jid, { text: `👑 *Akses Ditolak*\nPerintah ini hanya bisa digunakan oleh Owner!` }, { quoted: msg });
-
-      const rawArg = body.replace(/^\.?upswgroup\s*/i, "").trim();
-      const isAll = rawArg.toLowerCase().startsWith("all ") || rawArg.toLowerCase() === "all";
-      const cleanArg = isAll ? rawArg.replace(/^all\s*/i, "").trim() : rawArg;
-
-      // Extract quoted or direct media
-      const quoted = msg.message?.extendedTextMessage?.contextInfo?.quotedMessage;
-      let quotedMsg = quoted;
-      if (quotedMsg?.ephemeralMessage?.message) quotedMsg = quotedMsg.ephemeralMessage.message;
-      if (quotedMsg?.viewOnceMessage?.message) quotedMsg = quotedMsg.viewOnceMessage.message;
-      if (quotedMsg?.viewOnceMessageV2?.message) quotedMsg = quotedMsg.viewOnceMessageV2.message;
-      if (quotedMsg?.viewOnceMessageV2Extension?.message) quotedMsg = quotedMsg.viewOnceMessageV2Extension.message;
-
-      const directImg = msg.message?.imageMessage;
-      const quotedImg = quotedMsg?.imageMessage;
-      const directVid = msg.message?.videoMessage;
-      const quotedVid = quotedMsg?.videoMessage;
-      const directAudio = msg.message?.audioMessage;
-      const quotedAudio = quotedMsg?.audioMessage;
-
-      const isImage = !!(directImg || quotedImg);
-      const isVideo = !!(directVid || quotedVid);
-      const isAudio = !!(directAudio || quotedAudio);
-
-      const textStatus = cleanArg 
-        || quotedMsg?.conversation 
-        || quotedMsg?.extendedTextMessage?.text 
-        || (directImg?.caption && directImg.caption !== body ? directImg.caption : "") 
-        || (directVid?.caption && directVid.caption !== body ? directVid.caption : "") 
-        || quotedImg?.caption 
-        || quotedVid?.caption 
-        || "";
-
-      if (!isImage && !isVideo && !isAudio && !textStatus) {
-        return await this.sock.sendMessage(jid, {
-          text: `👑 *Fitur Up Status WhatsApp Grup (UPSWGROUP)*\n\nFitur ini mengunggah media (foto, video, audio) atau status teks langsung ke profil status grup secara otomatis tanpa memerlukan hak admin grup.\n\n📌 *Cara Penggunaan:*\n\n1️⃣ *Foto / Gambar:*\n• Kirim foto dengan caption *.upswgroup [caption]*\n• Atau balas foto dengan *.upswgroup [caption]*\n\n2️⃣ *Video:*\n• Kirim video dengan caption *.upswgroup [caption]*\n• Atau balas video dengan *.upswgroup [caption]*\n\n3️⃣ *Audio / Voice Note:*\n• Balas audio/VN dengan *.upswgroup*\n\n4️⃣ *Status Teks:*\n• Ketik *.upswgroup [teks status]*\n\n🎯 *Target Grup:*\n• Di dalam grup: otomatis terkirim ke profil grup ini.\n• Tambahkan kata *all* untuk kirim ke SEMUA grup:\n  Contoh: *.upswgroup all Pengumuman penting untuk semua grup!*`
-        }, { quoted: msg });
-      }
-
-      await this.sock.sendMessage(jid, { text: "⏳ *Sedang menyiapkan dan mengunggah status ke profil grup...*" }, { quoted: msg });
-
-      // Determine target groups
-      let targetGroups: string[] = [];
-      if (isAll || !jid.endsWith("@g.us")) {
-        try {
-          const participating = await this.sock.groupFetchAllParticipating();
-          targetGroups = Object.keys(participating || {});
-        } catch (e: any) {
-          console.error("[UPSWGROUP] Failed to fetch participating groups:", e);
-        }
-      } else {
-        targetGroups = [jid];
-      }
-
-      if (targetGroups.length === 0) {
-        return await this.sock.sendMessage(jid, { text: "❌ Bot belum bergabung ke dalam grup WhatsApp manapun!" }, { quoted: msg });
-      }
-
-      // Prepare media buffer if image/video/audio
-      let mediaBuffer: Buffer | null = null;
-      let mediaMime: string = "";
-      try {
-        if (isImage) {
-          const targetObj = directImg || quotedImg;
-          mediaBuffer = await this.downloadMediaFromObject(targetObj, 'image', msg.key);
-          mediaMime = targetObj?.mimetype || 'image/jpeg';
-        } else if (isVideo) {
-          const targetObj = directVid || quotedVid;
-          mediaBuffer = await this.downloadMediaFromObject(targetObj, 'video', msg.key);
-          mediaMime = targetObj?.mimetype || 'video/mp4';
-        } else if (isAudio) {
-          const targetObj = directAudio || quotedAudio;
-          mediaBuffer = await this.downloadMediaFromObject(targetObj, 'audio', msg.key);
-          mediaMime = targetObj?.mimetype || 'audio/mp4';
-        }
-      } catch (err: any) {
-        console.error("[UPSWGROUP] Download media error:", err);
-      }
-
-      if ((isImage || isVideo || isAudio) && (!mediaBuffer || mediaBuffer.length === 0)) {
-        return await this.sock.sendMessage(jid, { text: "❌ Gagal mengunduh media untuk status grup. Pastikan media masih valid." }, { quoted: msg });
-      }
-
-      // Background colors for text status
-      const bgColors = ["#1E293B", "#0F172A", "#064E3B", "#1E3A8A", "#581C87", "#701A75", "#831843", "#7C2D12"];
-      const randomBg = bgColors[Math.floor(Math.random() * bgColors.length)];
-      const randomFont = Math.floor(Math.random() * 5) + 1;
-
-      let successCount = 0;
-      let failCount = 0;
-      const groupNames: string[] = [];
-
-      for (const targetGid of targetGroups) {
-        try {
-          const targetJidList: string[] = [targetGid];
-          let gSubject = "Grup";
-          try {
-            const meta = await this.sock.groupMetadata(targetGid);
-            if (meta?.subject) gSubject = meta.subject;
-            if (meta?.participants) {
-              for (const p of meta.participants) {
-                if (p.id && !targetJidList.includes(p.id)) {
-                  targetJidList.push(p.id);
-                }
-              }
-            }
-          } catch (metaErr) {
-            console.warn(`[UPSWGROUP] Could not fetch metadata for ${targetGid}, using JID only:`, metaErr);
-          }
-
-          const uniqueJidList = Array.from(new Set(targetJidList));
-
-          let messageContent: any = {};
-          if (isImage && mediaBuffer) {
-            messageContent = {
-              image: mediaBuffer,
-              caption: textStatus || undefined,
-              mimetype: mediaMime || 'image/jpeg'
-            };
-          } else if (isVideo && mediaBuffer) {
-            messageContent = {
-              video: mediaBuffer,
-              caption: textStatus || undefined,
-              mimetype: mediaMime || 'video/mp4'
-            };
-          } else if (isAudio && mediaBuffer) {
-            messageContent = {
-              audio: mediaBuffer,
-              mimetype: mediaMime || 'audio/mp4',
-              ptt: true
-            };
-          } else {
-            messageContent = {
-              text: textStatus
-            };
-          }
-
-          // Generate message payload targeted to the group and upload media
-          const fullMsg = await generateWAMessage(targetGid, messageContent, {
-            upload: this.sock.waUploadToServer,
-            userJid: this.sock.user?.id || ""
-          });
-
-          const innerMessage: any = { ...fullMsg.message };
-          let mediaTypeStr = '';
-          if (innerMessage.imageMessage) {
-            mediaTypeStr = 'image';
-            innerMessage.imageMessage = {
-              ...innerMessage.imageMessage,
-              contextInfo: {
-                ...(innerMessage.imageMessage.contextInfo || {}),
-                isGroupStatus: true
-              }
-            };
-          } else if (innerMessage.videoMessage) {
-            mediaTypeStr = 'video';
-            innerMessage.videoMessage = {
-              ...innerMessage.videoMessage,
-              contextInfo: {
-                ...(innerMessage.videoMessage.contextInfo || {}),
-                isGroupStatus: true
-              }
-            };
-          } else if (innerMessage.audioMessage) {
-            mediaTypeStr = 'audio';
-            innerMessage.audioMessage = {
-              ...innerMessage.audioMessage,
-              contextInfo: {
-                ...(innerMessage.audioMessage.contextInfo || {}),
-                isGroupStatus: true
-              }
-            };
-          } else if (innerMessage.extendedTextMessage) {
-            innerMessage.extendedTextMessage = {
-              ...innerMessage.extendedTextMessage,
-              backgroundArgb: 0xff1e293b,
-              font: proto.Message.ExtendedTextMessage.FontType.SYSTEM_BOLD,
-              contextInfo: {
-                ...(innerMessage.extendedTextMessage.contextInfo || {}),
-                isGroupStatus: true
-              }
-            };
-          } else if (innerMessage.conversation) {
-            innerMessage.extendedTextMessage = {
-              text: innerMessage.conversation,
-              backgroundArgb: 0xff1e293b,
-              font: proto.Message.ExtendedTextMessage.FontType.SYSTEM_BOLD,
-              contextInfo: {
-                isGroupStatus: true
-              }
-            };
-            delete innerMessage.conversation;
-          }
-
-          const finalStatusMessage: any = {
-            groupStatusMessageV2: {
-              message: innerMessage
-            },
-            groupStatusMessage: {
-              message: innerMessage
-            }
-          };
-
-          // Relay directly to group JID (targetGid)
-          await this.sock.relayMessage(targetGid, finalStatusMessage, {
-            messageId: fullMsg.key.id,
-            additionalAttributes: mediaTypeStr ? { mediatype: mediaTypeStr } : undefined
-          });
-
-          successCount++;
-          groupNames.push(gSubject);
-
-          if (targetGroups.length > 1) {
-            await new Promise(res => setTimeout(res, 1200));
-          }
-        } catch (postErr: any) {
-          console.error(`[UPSWGROUP] Failed to send status to ${targetGid}:`, postErr);
-          failCount++;
-        }
-      }
-
-      const mediaTypeLabel = isImage ? "Foto / Gambar" : (isVideo ? "Video" : (isAudio ? "Audio / Voice Note" : "Teks Status"));
-      const summaryText = `✅ *BERHASIL MENGUNGGAH SW GRUP!*
-
-📊 *Detail Pengiriman:*
-• *Tipe Media:* ${mediaTypeLabel}
-• *Hak Akses:* Otomatis Tanpa Admin
-• *Grup Berhasil:* ${successCount} grup
-${failCount > 0 ? `• *Grup Gagal:* ${failCount} grup\n` : ""}• *Daftar Grup:* ${groupNames.slice(0, 5).join(", ")}${groupNames.length > 5 ? ` dan ${groupNames.length - 5} lainnya` : ""}
-${textStatus ? `• *Teks / Caption:* ${textStatus.length > 60 ? textStatus.substring(0, 60) + '...' : textStatus}\n` : ""}
-Status sekarang aktif di profil status grup dan dapat dilihat oleh semua anggota grup!`;
-
-      await this.sock.sendMessage(jid, { text: summaryText }, { quoted: msg });
-      this.broadcastState(`Upswgroup succeeded: ${successCount} groups updated`);
     } else if (body === ".restartbot" || body === "restartbot") {
       if (!isOwner) return await this.sock.sendMessage(jid, { text: `👑 *Akses Ditolak*\nPerintah ini hanya bisa digunakan oleh Owner!` }, { quoted: msg });
       await this.sock.sendMessage(jid, { text: `🔄 *Restarting...*\n\nBot sedang dimulai ulang. Harap tunggu sebentar.` }, { quoted: msg });
