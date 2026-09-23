@@ -72,6 +72,7 @@ private karyawanData = {
   private antibotEnabled: boolean = false;
   private autoReadEnabled: boolean = false;
   private autoTypingEnabled: boolean = false;
+  private botMode: "self" | "publik" = "publik";
   private menuLink: string | null = "jadibotbatakvip.biz.id";
   private groupSettings = new Map<string, { welcomeEnabled?: boolean, welcomeMessage?: string, goodbyeEnabled?: boolean, goodbyeMessage?: string, antivideo?: boolean, antifoto?: boolean, antifoto1x?: boolean, antistiker?: boolean, antispam?: boolean, antitagsw?: boolean, antivirtex?: boolean, antitoxic?: boolean, antilinkall?: boolean, warns?: Record<string, number>, storeList?: Record<string, string>, setProses?: string, setDone?: string }>();
   
@@ -130,6 +131,7 @@ private karyawanData = {
       if (obj.antibotEnabled !== undefined) this.antibotEnabled = obj.antibotEnabled;
       if (obj.autoReadEnabled !== undefined) this.autoReadEnabled = obj.autoReadEnabled;
       if (obj.autoTypingEnabled !== undefined) this.autoTypingEnabled = obj.autoTypingEnabled;
+      if (obj.botMode !== undefined && (obj.botMode === "self" || obj.botMode === "publik")) this.botMode = obj.botMode;
       if (obj.menuLink !== undefined) this.menuLink = obj.menuLink;
       if (obj.ownerNumbers !== undefined && Array.isArray(obj.ownerNumbers)) {
         this.ownerNumbers = new Set(obj.ownerNumbers.map((n: string) => this.normalizeJid(n)));
@@ -159,6 +161,7 @@ private karyawanData = {
       antibotEnabled: this.antibotEnabled,
       autoReadEnabled: this.autoReadEnabled,
       autoTypingEnabled: this.autoTypingEnabled,
+      botMode: this.botMode,
       menuLink: this.menuLink,
       ownerNumbers: Array.from(this.ownerNumbers),
       premiumNumbers: Array.from(this.premiumNumbers),
@@ -554,7 +557,21 @@ private loadKaryawanData() {
       qr: this.currentQr,
       uptime: uptime,
       phoneNumber: phoneNumber,
+      botMode: this.botMode
     };
+  }
+
+  public setBotMode(mode: "self" | "publik") {
+    this.botMode = mode;
+    this.saveBotSettings();
+    this.broadcastState(`Mode bot diubah ke: ${mode.toUpperCase()}`);
+    if (this.io) {
+      this.io.to(this.userEmail).emit("status", this.getStatus());
+    }
+  }
+
+  public getBotMode(): "self" | "publik" {
+    return this.botMode;
   }
 
   public async start(phoneNumber?: string) {
@@ -1283,7 +1300,10 @@ private loadKaryawanData() {
     console.log("[DEBUG] ownerNumbers:", Array.from(this.ownerNumbers));
     console.log("[DEBUG] msg.key.fromMe:", msg.key.fromMe);
     const senderNum = senderJid.split('@')[0];
-    const isOwner = msg.key.fromMe || this.ownerNumbers.has(senderJid) || Array.from(this.ownerNumbers).some(o => {
+    const botUserJid = this.sock?.user?.id ? this.normalizeJid(this.sock.user.id) : "";
+    const botNum = botUserJid ? botUserJid.split('@')[0].split(':')[0] : "";
+    const isBotSelf = !!(botNum && (senderNum === botNum || (botNum.length >= 10 && senderNum.length >= 10 && botNum.slice(-10) === senderNum.slice(-10))));
+    const isOwner = msg.key.fromMe || isBotSelf || this.ownerNumbers.has(senderJid) || Array.from(this.ownerNumbers).some(o => {
         const oNum = o.split('@')[0];
         if (oNum === senderNum) return true;
         // Check if last 10 digits match (to handle country code issues like 0 vs 62 vs +234)
@@ -1323,7 +1343,7 @@ private loadKaryawanData() {
     }
     
     const requestedCmd = body.split(/[\s\n]+/)[0];
-    const ownerCommands = ['.addtextnama', 'addtextnama', '.deltextnama', 'deltextnama', '.ownermenu', 'ownermenu', '.antibot', 'antibot', '.autoread', 'autoread', '.savekontak', 'savekontak', '.broadcast', 'broadcast', '.restartbot', 'restartbot', '.addpremium', 'addpremium', '.addprem', 'addprem', '.addowner', 'addowner', '.delowner', 'delowner', '.listowner', 'listowner', '.listpremium', 'listpremium', '.delpremium', 'delpremium', '.setbotpp', 'setbotpp', '.setbotname', 'setbotname', '.addnamabot', 'addnamabot', '.delnamabot', 'delnamabot', '.totalfitur', 'totalfitur', '.addprefix', 'addprefix', '.delprefix', 'delprefix', '.listprefix', 'listprefix', '.addpoweredby', 'addpoweredby', '.delpoweredby', 'delpoweredby', '.listpoweredby', 'listpoweredby', '.linkset', 'linkset', '.dellinkset', 'dellinkset', '.addcmd', 'addcmd', '.delcmd', 'delcmd', '.listcmd', 'listcmd', '.self', 'self', '.publik', 'publik', '.setcoverbot', 'setcoverbot', '.delcoverbot', 'delcoverbot', '.setcovervideo', 'setcovervideo', '.delsetcovervideo', 'delsetcovervideo', '.delcovervideo', 'delcovervideo', '.anticall', 'anticall', '.autotyping', 'autotyping', '.addsewa', 'addsewa', '.delsewa', 'delsewa', '.listsewa', 'listsewa', '.joingc', 'joingc', '.creategc', 'creategc', '.addsticker', 'addsticker', '.delsticker', 'delsticker', '.addlimit', 'addlimit', '.dellimit', 'dellimit', '.listlimit', 'listlimit', '.autoblockprivate', 'autoblockprivate', '.delautoblockprivate', 'delautoblockprivate'];
+    const ownerCommands = ['.addtextnama', 'addtextnama', '.deltextnama', 'deltextnama', '.ownermenu', 'ownermenu', '.antibot', 'antibot', '.autoread', 'autoread', '.savekontak', 'savekontak', '.broadcast', 'broadcast', '.restartbot', 'restartbot', '.addpremium', 'addpremium', '.addprem', 'addprem', '.addowner', 'addowner', '.delowner', 'delowner', '.listowner', 'listowner', '.listpremium', 'listpremium', '.delpremium', 'delpremium', '.setbotpp', 'setbotpp', '.setbotname', 'setbotname', '.addnamabot', 'addnamabot', '.delnamabot', 'delnamabot', '.totalfitur', 'totalfitur', '.addprefix', 'addprefix', '.delprefix', 'delprefix', '.listprefix', 'listprefix', '.addpoweredby', 'addpoweredby', '.delpoweredby', 'delpoweredby', '.listpoweredby', 'listpoweredby', '.linkset', 'linkset', '.dellinkset', 'dellinkset', '.addcmd', 'addcmd', '.delcmd', 'delcmd', '.listcmd', 'listcmd', '.self', 'self', '.publik', 'publik', '.public', 'public', '.mode', 'mode', '.botmode', 'botmode', '.setcoverbot', 'setcoverbot', '.delcoverbot', 'delcoverbot', '.setcovervideo', 'setcovervideo', '.delsetcovervideo', 'delsetcovervideo', '.delcovervideo', 'delcovervideo', '.anticall', 'anticall', '.autotyping', 'autotyping', '.addsewa', 'addsewa', '.delsewa', 'delsewa', '.listsewa', 'listsewa', '.joingc', 'joingc', '.creategc', 'creategc', '.addsticker', 'addsticker', '.delsticker', 'delsticker', '.addlimit', 'addlimit', '.dellimit', 'dellimit', '.listlimit', 'listlimit', '.autoblockprivate', 'autoblockprivate', '.delautoblockprivate', 'delautoblockprivate'];
     const groupCommands = ['.afk', 'afk', '.joinch', 'joinch', '.cekidgc', 'cekidgc', '.infouser', 'infouser', '.tagadmin', 'tagadmin', '.infogrup', 'infogrup', '.leaderboard', 'leaderboard', '.totalchat', 'totalchat', '.groupmenu', 'groupmenu', '.delete', 'delete', '.hidetag', 'hidetag', '.kick', 'kick', '.add', 'add', '.open', 'open', '.close', 'close', '.open2', 'open2', '.close2', 'close2', '.antilinkall', 'antilinkall', '.linkgc', 'linkgc', '.setppgc', 'setppgc', '.delppgc', 'delppgc', '.setwelcome', 'setwelcome', '.setbye', 'setbye', '.welcome', 'welcome', '.goodbye', 'goodbye', '.antitagsw', 'antitagsw', '.antivideo', 'antivideo', '.antifoto', 'antifoto', '.antifoto1x', 'antifoto1x', '.antistiker', 'antistiker', '.antispam', 'antispam', '.setnamegc', 'setnamegc', '.setdescgc', 'setdescgc', '.culikswgc', 'culikswgc', '.culikprofilegc', 'culikprofilegc', '.kickall', 'kickall', '.sewabot', 'sewabot', '.promote', 'promote', '.demote', 'demote', '.werewolf', 'werewolf', '.joinww', 'joinww', '.startww', 'startww', '.mutegc', 'mutegc', '.resetlink', 'resetlink', '.tagall', 'tagall', '.setbotbio', 'setbotbio', '.delbotbio', 'delbotbio', '.antivirtex', 'antivirtex', '.antitoxic', 'antitoxic', '.menfess', 'menfess', '.confess', 'confess', '.balasmenfess', 'balasmenfess', '.tolakmenfess', 'tolakmenfess', '.stopmenfess', 'stopmenfess', '.warn', 'warn', '.listwarn', 'listwarn', '.delwarn', 'delwarn', '.infowarn', 'infowarn'];
     const funCommands = ['.ceksifat', 'ceksifat', '.cekkenakalan', 'cekkenakalan', '.cekperawan', 'cekperawan', '.cekperjaka', 'cekperjaka', '.cekjanda', 'cekjanda', '.cekduda', 'cekduda', '.bego', 'bego', '.rate', 'rate', '.top', 'top', '.funmenu', 'funmenu', '.cekkhodam', 'cekkhodam', '.cekganteng', 'cekganteng', '.cekcantik', 'cekcantik', '.cekjodoh', 'cekjodoh', '.ceklesby', 'ceklesby', '.cekpasangan', 'cekpasangan', '.cekgay', 'cekgay', '.cekhoby', 'cekhoby', '.cekkesetiaan', 'cekkesetiaan', '.jadian', 'jadian', '.kiss', 'kiss', '.quotes', 'quotes', '.avatar', 'avatar', '.ppcouple', 'ppcouple', '.infonegara', 'infonegara', '.cekwibu', 'cekwibu', '.meme', 'meme', '.waifu', 'waifu', '.ceksange', 'ceksange', '.cekkaya', 'cekkaya', '.cekbucin', 'cekbucin', '.artinama', 'artinama', '.cekmasadepan', 'cekmasadepan', '.faktadunia', 'faktadunia', '.cekgempa', 'cekgempa', '.cekcuaca', 'cekcuaca'];
     const margaCommands = ['.margamenu', 'margamenu', '.cekpariban', 'cekpariban', '.cektartulang', 'cektartulang', '.cektarito', 'cektarito', '.cekpadan', 'cekpadan'];
@@ -1460,8 +1480,23 @@ private loadKaryawanData() {
     const isPremiumCommand = premiumCommands.includes(requestedCmd.toLowerCase()) || premiumCommands.includes("." + possibleCommandName);
     const isAnyCommand = isMenuCmd || isSpecificMenu || isProtectedFeature || isOwnerCommand || isGroupCommand || isPremiumCommand;
 
+    // Enforcement of SELF mode vs PUBLIK mode
+    if (this.botMode === "self" && !isOwner) {
+      const isCmdOrMenu = isAnyCommand || body.startsWith(".") || body.startsWith("#") || body.startsWith("!") || body.startsWith("/") || this.menuCommands.has(possibleCommandName) || isSpecificMenu;
+      if (isCmdOrMenu) {
+        this.broadcastState(`[SELF MODE] Blocked non-owner ${senderJid} (${isGroup ? "grup" : "pribadi"}) from using bot`);
+        if (!isGroup) {
+          return await this.sock.sendMessage(jid, {
+            text: `🔒 *Mode Self Aktif*\n\nMaaf, bot saat ini sedang berada dalam mode *SELF* (khusus Owner).\nBot dinonaktifkan untuk publik & pesan pribadi sementara waktu.\n\n_Hanya Owner yang dapat mengakses perintah bot._`
+          }, { quoted: msg });
+        }
+        return; // Silently ignore in group
+      }
+      return; // Ignore other non-command chat from non-owners in self mode
+    }
+
     if (isMenuCmd || isSpecificMenu || isProtectedFeature) {
-      if (!this.registeredUsers.has(senderJid)) {
+      if (!this.registeredUsers.has(senderJid) && !isOwner) {
           const registerText = `Silakan daftar terlebih dahulu untuk menggunakan bot ini.\n\nKetik: *.daftar [nama].[umur]*\nContoh: .daftar Budi.18\n\nLink: ${this.menuLink || "jadibotbatakvip.biz.id"}`;
           const contextInfo = this.getMenuContextInfo();
           if (this.coverImageBuffer) {
@@ -1498,6 +1533,7 @@ ${this.menuLink ? `\n🔗 Link: ${this.menuLink}` : ''}
 ╭─   [ 𝐁𝐎𝐓 𝐈𝐍𝐅𝐎 ]
 │ 🔔 𝐍𝐚𝐦𝐚 𝐁𝐨𝐭 : ${botName}
 │ 👑 𝐎𝐰𝐧𝐞𝐫      : ${isOwner ? 'Owner' : 'User'}
+│ 🌐 𝐌𝐨𝐝𝐞       : ${this.botMode.toUpperCase()}
 │ ⚠️ totalfitur : ${totalFitur}
 ╰───────────────
 ${readmore}
@@ -1769,7 +1805,7 @@ Perintah ini hanya bisa digunakan oleh Owner!` }, { quoted: msg });
 │ .addcmd
 │ .delcmd
 │ .listcmd
-│ .self / .publik
+│ .self / .publik [Status: ${this.botMode.toUpperCase()}]
 │ .setcoverbot / .delcoverbot
 │ .setcovervideo / .delsetcovervideo
 │ .anticall on/off
@@ -3289,9 +3325,75 @@ Contoh: .delowner 628xxx` }, { quoted: msg });
         i++;
       }
       await this.sock.sendMessage(jid, { text: list.trim() }, { quoted: msg });
-    } else if (body === ".self" || body === "self" || body === ".publik" || body === "publik") {
-      const mode = body.replace(".", "");
-      await this.sock.sendMessage(jid, { text: `✅ Berhasil mengubah mode bot menjadi: ${mode}` }, { quoted: msg });
+    } else if (
+      body === ".self" || body === "self" || 
+      body === ".publik" || body === "publik" || 
+      body === ".public" || body === "public" ||
+      body.startsWith(".self ") || body.startsWith("self ") ||
+      body.startsWith(".publik ") || body.startsWith("publik ") ||
+      body.startsWith(".public ") || body.startsWith("public ") ||
+      body === ".mode" || body === "mode" || body.startsWith(".mode ") || body.startsWith("mode ") ||
+      body === ".botmode" || body === "botmode" || body.startsWith(".botmode ") || body.startsWith("botmode ")
+    ) {
+      if (!isOwner) {
+        return await this.sock.sendMessage(jid, { 
+          text: `👑 *Akses Ditolak*\nPerintah ini hanya bisa digunakan oleh Owner!` 
+        }, { quoted: msg });
+      }
+
+      const cleanCmd = body.replace(/^\.?/, "").trim().toLowerCase();
+      let targetMode: "self" | "publik" | "status" = "status";
+
+      if (cleanCmd === "self" || cleanCmd === "self on" || cleanCmd === "publik off" || cleanCmd === "public off" || cleanCmd === "mode self" || cleanCmd === "botmode self") {
+        targetMode = "self";
+      } else if (cleanCmd === "publik" || cleanCmd === "public" || cleanCmd === "publik on" || cleanCmd === "public on" || cleanCmd === "self off" || cleanCmd === "mode publik" || cleanCmd === "botmode publik" || cleanCmd === "mode public" || cleanCmd === "botmode public") {
+        targetMode = "publik";
+      } else if (cleanCmd.includes("self")) {
+        targetMode = "self";
+      } else if (cleanCmd.includes("publik") || cleanCmd.includes("public")) {
+        targetMode = "publik";
+      } else {
+        targetMode = "status";
+      }
+
+      if (targetMode === "self") {
+        this.botMode = "self";
+        this.saveBotSettings();
+        this.broadcastState(`Mode bot diubah ke: SELF`);
+        if (this.io) {
+          this.io.to(this.userEmail).emit("status", this.getStatus());
+        }
+        const reply = `🔒 *Mode Bot Berhasil Diubah ke SELF*\n\n` +
+          `🤖 *Status:* SELF (Khusus Owner)\n` +
+          `🔒 *Pribadi (PC):* Hanya Owner yang direspon oleh bot\n` +
+          `🔒 *Publik (Grup):* Hanya Owner yang direspon oleh bot\n` +
+          `🚫 *Non-Owner:* Perintah dinonaktifkan\n\n` +
+          `_Ketik *.publik* untuk mengembalikan ke mode publik (semua pengguna)._`;
+        await this.sock.sendMessage(jid, { text: reply }, { quoted: msg });
+      } else if (targetMode === "publik") {
+        this.botMode = "publik";
+        this.saveBotSettings();
+        this.broadcastState(`Mode bot diubah ke: PUBLIK`);
+        if (this.io) {
+          this.io.to(this.userEmail).emit("status", this.getStatus());
+        }
+        const reply = `🌐 *Mode Bot Berhasil Diubah ke PUBLIK*\n\n` +
+          `🤖 *Status:* PUBLIK (Semua Pengguna)\n` +
+          `🌐 *Pribadi (PC):* Semua pengguna dapat menggunakan bot\n` +
+          `🌐 *Publik (Grup):* Semua anggota grup dapat menggunakan bot\n` +
+          `✅ *Akses:* Terbuka untuk umum\n\n` +
+          `_Ketik *.self* untuk membatasi bot hanya untuk Owner._`;
+        await this.sock.sendMessage(jid, { text: reply }, { quoted: msg });
+      } else {
+        const reply = `🤖 *Status Mode Bot*\n\n` +
+          `Mode Saat Ini: *${this.botMode.toUpperCase()}*\n\n` +
+          `• *SELF*: Bot hanya merespon Owner (di pesan pribadi & grup)\n` +
+          `• *PUBLIK*: Bot merespon semua orang (di pesan pribadi & grup)\n\n` +
+          `📌 *Cara Mengubah:*\n` +
+          `• Ketik *.self* untuk mengaktifkan mode Self\n` +
+          `• Ketik *.publik* untuk mengaktifkan mode Publik`;
+        await this.sock.sendMessage(jid, { text: reply }, { quoted: msg });
+      }
     } else if (body.startsWith(".setcoverbot") || body.startsWith("setcoverbot")) {
       const isQuotedImage = msg.message?.extendedTextMessage?.contextInfo?.quotedMessage?.imageMessage;
       const isImage = msg.message?.imageMessage;

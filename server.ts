@@ -411,6 +411,15 @@ async function startServer() {
     res.json({ success: true, message: "Session deleted" });
   });
 
+  app.post("/api/whatsapp/mode", (req, res) => {
+    const { mode } = req.body;
+    if (mode === "self" || mode === "publik") {
+      getWaBot(req).setBotMode(mode);
+      return res.json({ success: true, mode });
+    }
+    res.status(400).json({ error: "Mode tidak valid. Pilih 'self' atau 'publik'." });
+  });
+
   
   app.post("/api/admin/manual-action", async (req, res) => {
     let currentUser = req.headers["x-user-email"] as string;
