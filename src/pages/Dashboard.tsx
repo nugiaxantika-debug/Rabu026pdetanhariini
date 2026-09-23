@@ -2173,7 +2173,7 @@ export default function Dashboard() {
                   <div className="bg-amber-500/20 p-2 rounded-lg text-amber-400 mt-1"><Settings className="w-5 h-5" /></div>
                   <div>
                     <h3 className="font-semibold text-white text-sm">.ownermenu</h3>
-                    <p className="text-xs text-neutral-400 mt-1">Menu khusus: .self, .publik, .addowner, .delowner, .addnamabot, .delnamabot, .antibot, .autoread, .savekontak, broadcast & manajemen.</p>
+                    <p className="text-xs text-neutral-400 mt-1">Menu khusus: .self, .publik, .addwalinkcha, .delwalinkcha, .addowner, .delowner, .addnamabot, .delnamabot, .antibot, .autoread, .savekontak, broadcast & manajemen.</p>
                   </div>
                 </div>
                 <div className="bg-neutral-950 border border-neutral-800 p-4 rounded-xl flex items-start gap-4">
