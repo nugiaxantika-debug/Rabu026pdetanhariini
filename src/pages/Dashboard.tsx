@@ -21,7 +21,6 @@ interface LogEntry {
 export default function Dashboard() {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [status, setStatus] = useState<BotStatus>("disconnected");
-  const [botMode, setBotMode] = useState<"self" | "publik">("publik");
   const [qrCode, setQrCode] = useState<string | null>(null);
   const [pairingCode, setPairingCode] = useState<string | null>(null);
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -426,9 +425,6 @@ export default function Dashboard() {
         setPairingCode(null);
       }
       setUptime(data.uptime ?? null);
-      if (data.botMode) {
-        setBotMode(data.botMode);
-      }
     });
 
     newSocket.on("qr", (qr: string) => {
@@ -471,26 +467,6 @@ export default function Dashboard() {
     }
     setIsConfirmingDelete(false);
     apiCall("delete-session");
-  };
-
-  const handleToggleMode = async (newMode: "self" | "publik") => {
-    try {
-      const apiBaseURL = import.meta.env.VITE_APP_URL || window.location.origin;
-      const res = await fetch(`${apiBaseURL}/api/whatsapp/mode`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-user-email": currentUserEmail || "default"
-        },
-        body: JSON.stringify({ mode: newMode })
-      });
-      if (res.ok) {
-        setBotMode(newMode);
-        setLogs((prev) => [...prev, { time: new Date().toISOString(), message: `Mode bot berhasil diubah ke: ${newMode.toUpperCase()}` }]);
-      }
-    } catch (e) {
-      console.error(e);
-    }
   };
 
   const handleAdminDeleteSession = async (targetEmail: string) => {
@@ -1933,11 +1909,6 @@ export default function Dashboard() {
                         <Clock className="w-3 h-3" /> Uptime: {formatUptime(uptime)}
                       </span>
                       <span className="text-[10px] mt-1 text-emerald-600/70 whitespace-nowrap">Anti-ban Protection: Aktif</span>
-                      <div className="mt-2 w-full text-center">
-                        <span className={`inline-block px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${botMode === 'self' ? 'bg-amber-100 text-amber-800 border-amber-300' : 'bg-emerald-100 text-emerald-800 border-emerald-300'}`}>
-                          Mode: {botMode.toUpperCase()}
-                        </span>
-                      </div>
                     </div>
                   ) : qrCode ? (
                     <div className="text-center">
@@ -2048,35 +2019,6 @@ export default function Dashboard() {
                   <Trash2 className={`w-6 h-6 mb-2 transition-transform ${isConfirmingDelete ? "scale-110" : "group-hover:-translate-y-1"}`} />
                   <span className="font-medium text-sm text-center">{isConfirmingDelete ? "Klik Lagi (Yakin?)" : "Hapus Sesi"}</span>
                 </button>
-              </div>
-
-              {/* Bot Mode Controls */}
-              <div className="mt-4 pt-4 border-t border-neutral-800 flex flex-col sm:flex-row items-center justify-between gap-3 bg-neutral-950/60 p-4 rounded-xl border border-neutral-800">
-                <div>
-                  <h4 className="text-sm font-semibold text-white flex items-center gap-2">
-                    Mode Bot: 
-                    <span className={`px-2 py-0.5 rounded text-xs font-bold ${botMode === "self" ? "bg-amber-500/20 text-amber-400 border border-amber-500/30" : "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"}`}>
-                      {botMode.toUpperCase()}
-                    </span>
-                  </h4>
-                  <p className="text-xs text-neutral-400 mt-0.5">
-                    {botMode === "self" ? "Khusus Owner: Perintah di chat pribadi & publik (grup) hanya merespon Owner." : "Publik: Semua pengguna di chat pribadi & publik (grup) dapat menggunakan bot."}
-                  </p>
-                </div>
-                <div className="flex gap-2 w-full sm:w-auto">
-                  <button
-                    onClick={() => handleToggleMode("self")}
-                    className={`flex-1 sm:flex-none px-4 py-2 rounded-lg text-xs font-semibold transition-all border ${botMode === "self" ? "bg-amber-500 text-black border-amber-400 shadow-md shadow-amber-500/20" : "bg-neutral-900 text-neutral-300 border-neutral-700 hover:bg-neutral-800"}`}
-                  >
-                    🔒 Mode Self
-                  </button>
-                  <button
-                    onClick={() => handleToggleMode("publik")}
-                    className={`flex-1 sm:flex-none px-4 py-2 rounded-lg text-xs font-semibold transition-all border ${botMode === "publik" ? "bg-emerald-500 text-black border-emerald-400 shadow-md shadow-emerald-500/20" : "bg-neutral-900 text-neutral-300 border-neutral-700 hover:bg-neutral-800"}`}
-                  >
-                    🌐 Mode Publik
-                  </button>
-                </div>
               </div>
             </div>
 
